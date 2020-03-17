@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.annotation.Resource
 
 @RestController
@@ -23,9 +23,6 @@ class IncomeController {
 
     @Resource
     lateinit var incomeRepo: IncomeRepo
-
-    @Resource
-    lateinit var userDetailsRepo: UserDetailsRepo
 
     @GetMapping
     fun getAll(): List<Income> = incomeRepo.findAll()
@@ -36,7 +33,7 @@ class IncomeController {
     @PostMapping
     fun createIncome(@RequestBody income: Income): Income {
         income.user = SecurityContextHolder.getContext().authentication.principal as User
-        income.creationDate = LocalDate.now()
+        income.creationDate = LocalDateTime.now()
         return incomeRepo.save(income)
     }
 
