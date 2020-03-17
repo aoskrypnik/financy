@@ -1,10 +1,9 @@
 package com.skrypnik.financy.controller
 
 import com.skrypnik.financy.domain.Expense
-import com.skrypnik.financy.domain.User
 import com.skrypnik.financy.repo.ExpenseRepo
+import com.skrypnik.financy.service.UserService
 import org.springframework.beans.BeanUtils.copyProperties
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -21,6 +20,9 @@ import javax.annotation.Resource
 class ExpenseController {
 
     @Resource
+    lateinit var userService: UserService
+
+    @Resource
     lateinit var expenseRepo: ExpenseRepo
 
     @GetMapping
@@ -31,7 +33,7 @@ class ExpenseController {
 
     @PostMapping
     fun createExpense(@RequestBody expense: Expense): Expense {
-        expense.user = SecurityContextHolder.getContext().authentication.principal as User
+        expense.user = userService.getCurrentUser()
         expense.creationDate = LocalDateTime.now()
         return expenseRepo.save(expense)
     }

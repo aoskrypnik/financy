@@ -1,11 +1,9 @@
 package com.skrypnik.financy.controller
 
 import com.skrypnik.financy.domain.Income
-import com.skrypnik.financy.domain.User
 import com.skrypnik.financy.repo.IncomeRepo
-import com.skrypnik.financy.repo.UserDetailsRepo
+import com.skrypnik.financy.service.UserService
 import org.springframework.beans.BeanUtils.copyProperties
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -22,6 +20,9 @@ import javax.annotation.Resource
 class IncomeController {
 
     @Resource
+    lateinit var userService: UserService
+
+    @Resource
     lateinit var incomeRepo: IncomeRepo
 
     @GetMapping
@@ -32,7 +33,7 @@ class IncomeController {
 
     @PostMapping
     fun createIncome(@RequestBody income: Income): Income {
-        income.user = SecurityContextHolder.getContext().authentication.principal as User
+        income.user = userService.getCurrentUser()
         income.creationDate = LocalDateTime.now()
         return incomeRepo.save(income)
     }
