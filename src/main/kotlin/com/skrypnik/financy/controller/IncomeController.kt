@@ -1,6 +1,7 @@
 package com.skrypnik.financy.controller
 
 import com.skrypnik.financy.domain.Income
+import com.skrypnik.financy.domain.IncomeCategoryEnum
 import com.skrypnik.financy.repo.IncomeRepo
 import com.skrypnik.financy.service.UserService
 import org.springframework.beans.BeanUtils.copyProperties
@@ -49,4 +50,7 @@ class IncomeController {
     fun deleteIncome(@PathVariable("id") income: Income) {
         incomeRepo.delete(income)
     }
+
+    @GetMapping("/category")
+    fun getCategories(): List<IncomeCategoryEnum> = IncomeCategoryEnum.values().toList()
 }

@@ -1,6 +1,7 @@
 package com.skrypnik.financy.controller
 
 import com.skrypnik.financy.domain.Expense
+import com.skrypnik.financy.domain.ExpenseCategoryEnum
 import com.skrypnik.financy.repo.ExpenseRepo
 import com.skrypnik.financy.service.UserService
 import org.springframework.beans.BeanUtils.copyProperties
@@ -47,4 +48,7 @@ class ExpenseController {
 
     @DeleteMapping("{id}")
     fun deleteExpense(@PathVariable("id") expense: Expense) = expenseRepo.delete(expense)
+
+    @GetMapping("/category")
+    fun getCategories(): List<ExpenseCategoryEnum> = ExpenseCategoryEnum.values().toList()
 }
