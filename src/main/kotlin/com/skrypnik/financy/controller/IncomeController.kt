@@ -47,9 +47,7 @@ class IncomeController {
     }
 
     @DeleteMapping("{id}")
-    fun deleteIncome(@PathVariable("id") income: Income) {
-        incomeRepo.delete(income)
-    }
+    fun deleteIncome(@PathVariable("id") income: Income) = incomeRepo.delete(income)
 
     @GetMapping("/category")
     fun getCategories(): List<IncomeCategoryEnum> = IncomeCategoryEnum.values().toList()

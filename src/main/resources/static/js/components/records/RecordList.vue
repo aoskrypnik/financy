@@ -5,7 +5,8 @@
                     :key="record.id"
                     :record="record"
                     :records="records"
-                    :deleteRecord="deleteRecord"/>
+                    :deleteIncome="deleteIncome"
+                    :deleteExpense="deleteExpense"/>
     </v-layout>
 </template>
 
@@ -30,8 +31,15 @@
             }
         },
         methods: {
-            deleteRecord(record) {
+            deleteIncome(record) {
                 this.$resource('/income{/id}').remove({id: record.id}).then(result => {
+                    if (result.ok) {
+                        this.records.splice(this.records.indexOf(record), 1)
+                    }
+                })
+            },
+            deleteExpense(record) {
+                this.$resource('/expense{/id}').remove({id: record.id}).then(result => {
                     if (result.ok) {
                         this.records.splice(this.records.indexOf(record), 1)
                     }
