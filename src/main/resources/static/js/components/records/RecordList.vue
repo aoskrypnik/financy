@@ -1,5 +1,5 @@
 <template>
-    <v-layout align-space-around justify-start column>
+    <v-layout align-content-space-around justify-start column>
         <record-form :records="sortedRecords"/>
         <record-row v-for="record in sortedRecords"
                     :key="record.id"
