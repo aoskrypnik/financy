@@ -3,7 +3,7 @@
         <v-row justify="space-around">
             <v-bottom-sheet v-model="expenseSheet" persistent inset>
                 <template v-slot:activator="{ on }">
-                    <v-btn v-on="on" class="mx-2" x-large fab dark color="red">
+                    <v-btn v-on="on" class="mx-2" large fab dark color="red">
                         <v-icon dark>euro</v-icon>
                     </v-btn>
                 </template>
@@ -20,9 +20,13 @@
                     </v-col>
                 </v-sheet>
             </v-bottom-sheet>
+            <v-btn large outlined :color="balanceColor.length === 0 ? 'grey' : balanceColor[0]"
+                   :class="{'disable-events': true}" height="64px">
+                Balance {{balanceList.length === 0 ? 0 : balanceList[0]}}
+            </v-btn>
             <v-bottom-sheet v-model="incomeSheet" persistent inset>
                 <template v-slot:activator="{ on }">
-                    <v-btn v-on="on" class="mx-2" x-large fab dark color="green">
+                    <v-btn v-on="on" class="mx-2" large fab dark color="green">
                         <v-icon dark>euro</v-icon>
                     </v-btn>
                 </template>
@@ -57,6 +61,9 @@
                 result.json().then(data => {
                     data.forEach(e => expenseCategories.push(e));
                 }));
+            let balanceList = [];
+            let balanceColor = [];
+            this.countBalance(balanceList, balanceColor, this.defineBalanceColor);
             return {
                 expenseSum: '',
                 expenseCategory: '',
@@ -67,15 +74,32 @@
                 incomeComment: '',
                 incomeSheet: false,
                 incomeCategories: incomeCategories,
-                expenseCategories: expenseCategories
+                expenseCategories: expenseCategories,
+                balanceList: balanceList,
+                balanceColor: balanceColor
             }
         },
         methods: {
+            countBalance(balanceList, balanceColor, callback) {
+                this.$resource('/statistic/balance/2020-03-01').get().then(result => {
+                    result.json().then(data => {
+                        balanceList.push(data);
+                        balanceColor.push(callback());
+                    })
+                });
+            },
+            defineBalanceColor() {
+                if (this.balanceList.length === 0 || this.balanceList[0] === 0) return 'grey';
+                if (this.balanceList[0] > 0) return 'green';
+                if (this.balanceList[0] < 0) return 'red';
+            },
             saveIncome() {
                 const record = {sum: this.incomeSum, category: this.incomeCategory, comment: this.incomeComment};
                 this.$resource('/income{/id}').save({}, record).then(result =>
                     result.json().then(data => {
                         this.records.push(data);
+                        this.balanceList[0] += parseInt(this.incomeSum);
+                        this.balanceColor[0] = this.defineBalanceColor();
                         this.incomeSum = '';
                         this.incomeCategory = '';
                         this.incomeComment = '';
@@ -87,6 +111,8 @@
                 this.$resource('/expense{/id}').save({}, record).then(result =>
                     result.json().then(data => {
                         this.records.push(data);
+                        this.balanceList[0] -= parseInt(this.expenseSum);
+                        this.balanceColor[0] = this.defineBalanceColor();
                         this.expenseSum = '';
                         this.expenseCategory = '';
                         this.expenseComment = '';
@@ -98,5 +124,7 @@
 </script>
 
 <style>
-
+    .disable-events {
+        pointer-events: none;
+    }
 </style>
