@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
-import java.util.Objects.nonNull
 import javax.annotation.Resource
 
 @Controller
@@ -28,10 +27,10 @@ class MainController {
     @GetMapping
     fun getMainPage(model: Model, @AuthenticationPrincipal user: User?): String {
         val data = mutableMapOf<Any, Any?>()
-        if (nonNull(user)) {
+        user?.let {
             data["profile"] = user
-            data["incomes"] = incomeRepo.findAll()
-            data["expenses"] = expenseRepo.findAll()
+            data["incomes"] = incomeRepo.findByUser(it)
+            data["expenses"] = expenseRepo.findByUser(it)
         }
         model.addAttribute("frontendData", data)
         model.addAttribute("isDevMode", "dev" == profile)
