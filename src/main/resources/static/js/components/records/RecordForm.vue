@@ -3,7 +3,7 @@
         <v-row justify="space-around">
             <v-bottom-sheet v-model="expenseSheet" persistent inset>
                 <template v-slot:activator="{ on }">
-                    <v-btn v-on="on" class="mx-2" large fab dark color="red">
+                    <v-btn v-on="on" class="mx-2" fab dark color="red">
                         <v-icon dark>euro</v-icon>
                     </v-btn>
                 </template>
@@ -21,12 +21,12 @@
                 </v-sheet>
             </v-bottom-sheet>
             <v-btn large outlined :color="balanceColor.length === 0 ? 'grey' : balanceColor[0]"
-                   :class="{'disable-events': true}" height="64px">
+                   :class="{'disable-events': true}" height="56px" max-width="146px">
                 Balance {{balanceList.length === 0 ? 0 : balanceList[0]}}
             </v-btn>
             <v-bottom-sheet v-model="incomeSheet" persistent inset>
                 <template v-slot:activator="{ on }">
-                    <v-btn v-on="on" class="mx-2" large fab dark color="green">
+                    <v-btn v-on="on" class="mx-2" fab dark color="green">
                         <v-icon dark>euro</v-icon>
                     </v-btn>
                 </template>
@@ -126,5 +126,9 @@
 <style>
     .disable-events {
         pointer-events: none;
+    }
+
+    .v-btn {
+        min-width: 0;
     }
 </style>
