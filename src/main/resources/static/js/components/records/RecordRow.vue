@@ -26,18 +26,21 @@
 </template>
 
 <script>
+    import {mapActions} from 'vuex'
+
     function reformatDate(creationDate) {
         return new Date(creationDate).toLocaleDateString()
     }
 
     export default {
-        props: ['record', 'deleteIncome', 'deleteExpense', 'records'],
+        props: ['record'],
         methods: {
+            ...mapActions(['removeExpenseAction', 'removeIncomeAction']),
             del() {
                 if (this.record.type === 'income') {
-                    this.deleteIncome(this.record)
+                    this.removeIncomeAction(this.record)
                 } else if (this.record.type === 'expense') {
-                    this.deleteExpense(this.record)
+                    this.removeExpenseAction(this.record)
                 }
             }
         },

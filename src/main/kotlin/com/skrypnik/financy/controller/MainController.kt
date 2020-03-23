@@ -3,12 +3,14 @@ package com.skrypnik.financy.controller
 import com.skrypnik.financy.domain.User
 import com.skrypnik.financy.repo.ExpenseRepo
 import com.skrypnik.financy.repo.IncomeRepo
+import com.skrypnik.financy.service.StatisticService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import java.time.LocalDate
 import javax.annotation.Resource
 
 @Controller
@@ -17,6 +19,9 @@ class MainController {
 
     @Value("\${spring.profiles.active}")
     lateinit var profile: String
+
+    @Resource
+    lateinit var statisticService: StatisticService
 
     @Resource
     lateinit var expenseRepo: ExpenseRepo
@@ -31,6 +36,7 @@ class MainController {
             data["profile"] = user
             data["incomes"] = incomeRepo.findByUser(it)
             data["expenses"] = expenseRepo.findByUser(it)
+            data["balance"] = statisticService.countBalanceByUserAndMonth(user, LocalDate.now())
         }
         model.addAttribute("frontendData", data)
         model.addAttribute("isDevMode", "dev" == profile)

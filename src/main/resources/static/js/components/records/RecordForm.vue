@@ -20,9 +20,9 @@
                     </v-col>
                 </v-sheet>
             </v-bottom-sheet>
-            <v-btn large outlined :color="balanceColor.length === 0 ? 'grey' : balanceColor[0]"
+            <v-btn large outlined
                    :class="{'disable-events': true}" height="56px" max-width="146px">
-                Balance {{balanceList.length === 0 ? 0 : balanceList[0]}}
+                Balance {{balanceGetter}}
             </v-btn>
             <v-bottom-sheet v-model="incomeSheet" persistent inset>
                 <template v-slot:activator="{ on }">
@@ -48,8 +48,10 @@
 </template>
 
 <script>
+    import {mapActions, mapGetters} from 'vuex'
+
     export default {
-        props: ['records'],
+        props: [],
         data() {
             let incomeCategories = [];
             this.$resource('/income/category').get().then(result =>
@@ -61,9 +63,6 @@
                 result.json().then(data => {
                     data.forEach(e => expenseCategories.push(e));
                 }));
-            let balanceList = [];
-            let balanceColor = [];
-            this.countBalance(balanceList, balanceColor, this.defineBalanceColor);
             return {
                 expenseSum: '',
                 expenseCategory: '',
@@ -75,48 +74,29 @@
                 incomeSheet: false,
                 incomeCategories: incomeCategories,
                 expenseCategories: expenseCategories,
-                balanceList: balanceList,
-                balanceColor: balanceColor
             }
         },
+        computed: {
+            ...mapGetters(['balanceGetter'])
+        },
         methods: {
-            countBalance(balanceList, balanceColor, callback) {
-                this.$resource('/statistic/balance/2020-03-01').get().then(result => {
-                    result.json().then(data => {
-                        balanceList.push(data);
-                        balanceColor.push(callback());
-                    })
-                });
-            },
-            defineBalanceColor() {
-                if (this.balanceList.length === 0 || this.balanceList[0] === 0) return 'grey';
-                if (this.balanceList[0] > 0) return 'green';
-                if (this.balanceList[0] < 0) return 'red';
-            },
+            ...mapActions(['addIncomeAction', 'addExpenseAction', 'recalculateBalanceAction']),
             saveIncome() {
                 const record = {sum: this.incomeSum, category: this.incomeCategory, comment: this.incomeComment};
-                this.$resource('/income{/id}').save({}, record).then(result =>
-                    result.json().then(data => {
-                        this.records.push(data);
-                        this.balanceList[0] += parseInt(this.incomeSum);
-                        this.balanceColor[0] = this.defineBalanceColor();
-                        this.incomeSum = '';
-                        this.incomeCategory = '';
-                        this.incomeComment = '';
-                    }));
+                this.addIncomeAction(record);
+                this.recalculateBalanceAction();
+                this.incomeSum = '';
+                this.incomeCategory = '';
+                this.incomeComment = '';
                 this.incomeSheet = !this.incomeSheet
             },
             saveExpense() {
                 const record = {sum: this.expenseSum, category: this.expenseCategory, comment: this.expenseComment};
-                this.$resource('/expense{/id}').save({}, record).then(result =>
-                    result.json().then(data => {
-                        this.records.push(data);
-                        this.balanceList[0] -= parseInt(this.expenseSum);
-                        this.balanceColor[0] = this.defineBalanceColor();
-                        this.expenseSum = '';
-                        this.expenseCategory = '';
-                        this.expenseComment = '';
-                    }));
+                this.addExpenseAction(record);
+                this.recalculateBalanceAction();
+                this.expenseSum = '';
+                this.expenseCategory = '';
+                this.expenseComment = '';
                 this.expenseSheet = !this.expenseSheet
             },
         }

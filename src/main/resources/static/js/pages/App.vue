@@ -13,7 +13,7 @@
                 <a href="/login">Google</a>
             </v-container>
             <v-container v-if="profile">
-                <record-list :records="records"/>
+                <record-list/>
             </v-container>
         </v-content>
     </v-app>
@@ -21,26 +21,13 @@
 
 <script>
     import RecordList from "../components/records/RecordList.vue"
+    import {mapState} from 'vuex'
 
     export default {
         components: {
             RecordList
         },
-        data() {
-            let incomes = frontendData.incomes ? frontendData.incomes : [];
-            incomes.forEach(function (element) {
-                element["type"] = "income"
-            });
-            let expenses = frontendData.expenses ? frontendData.expenses : [];
-            expenses.forEach(function (element) {
-                element["type"] = "expense"
-            });
-            let records = incomes.concat(expenses);
-            return {
-                records: records,
-                profile: frontendData.profile
-            }
-        }
+        computed: mapState(['profile'])
     }
 </script>
 
