@@ -20,7 +20,7 @@
                     </v-col>
                 </v-sheet>
             </v-bottom-sheet>
-            <v-btn large outlined
+            <v-btn large outlined :color="balanceColorGetter"
                    :class="{'disable-events': true}" height="56px" max-width="146px">
                 Balance {{balanceGetter}}
             </v-btn>
@@ -77,14 +77,13 @@
             }
         },
         computed: {
-            ...mapGetters(['balanceGetter'])
+            ...mapGetters(['balanceGetter', 'balanceColorGetter'])
         },
         methods: {
             ...mapActions(['addIncomeAction', 'addExpenseAction', 'recalculateBalanceAction']),
             saveIncome() {
                 const record = {sum: this.incomeSum, category: this.incomeCategory, comment: this.incomeComment};
                 this.addIncomeAction(record);
-                this.recalculateBalanceAction();
                 this.incomeSum = '';
                 this.incomeCategory = '';
                 this.incomeComment = '';
@@ -93,7 +92,6 @@
             saveExpense() {
                 const record = {sum: this.expenseSum, category: this.expenseCategory, comment: this.expenseComment};
                 this.addExpenseAction(record);
-                this.recalculateBalanceAction();
                 this.expenseSum = '';
                 this.expenseCategory = '';
                 this.expenseComment = '';

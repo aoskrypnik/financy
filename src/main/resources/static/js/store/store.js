@@ -27,6 +27,11 @@ export default new Vuex.Store({
         },
         balanceGetter: state => {
             return state.balance
+        },
+        balanceColorGetter: state => {
+            if (state.balance < 0) return 'red';
+            else if (state.balance > 0) return 'green';
+            else return 'grey'
         }
     },
     mutations: {

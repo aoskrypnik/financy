@@ -36,7 +36,7 @@ class MainController {
             data["profile"] = user
             data["incomes"] = incomeRepo.findByUser(it)
             data["expenses"] = expenseRepo.findByUser(it)
-            data["balance"] = statisticService.countBalanceByUserAndMonth(user, LocalDate.now())
+            data["balance"] = statisticService.countBalanceByUserAndMonth(user = it, date = LocalDate.now())
         }
         model.addAttribute("frontendData", data)
         model.addAttribute("isDevMode", "dev" == profile)
