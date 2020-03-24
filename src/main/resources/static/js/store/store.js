@@ -11,6 +11,8 @@ export default new Vuex.Store({
         expenses: frontendData.expenses,
         profile: frontendData.profile,
         balance: frontendData.balance,
+        expenseCategories: [],
+        incomeCategories: []
     },
     getters: {
         sortedRecords: state => {
@@ -32,6 +34,12 @@ export default new Vuex.Store({
             if (state.balance < 0) return 'red';
             else if (state.balance > 0) return 'green';
             else return 'grey'
+        },
+        incomeCategoriesGetter: state => {
+            return state.incomeCategories;
+        },
+        expenseCategoriesGetter: state => {
+            return state.expenseCategories;
         }
     },
     mutations: {
@@ -67,6 +75,12 @@ export default new Vuex.Store({
         },
         recalculateBalanceMutation(state, newBalance) {
             state.balance = parseInt(newBalance);
+        },
+        getExpenseCategoriesMutation(state, expenseCategories) {
+            state.expenseCategories = expenseCategories
+        },
+        getIncomeCategoriesMutation(state, incomeCategories) {
+            state.incomeCategories = incomeCategories
         }
     },
     actions: {
@@ -102,6 +116,20 @@ export default new Vuex.Store({
             const result = await Vue.resource(path).get();
             const data = await result.json();
             commit('recalculateBalanceMutation', data)
+        },
+        async getIncomeCategoriesAction({commit}) {
+            let incomeCategories = [];
+            const result = await Vue.resource('/income/category').get();
+            const data = await result.json();
+            data.forEach(e => incomeCategories.push(e));
+            commit('getIncomeCategoriesMutation', incomeCategories)
+        },
+        async getExpenseCategoriesAction({commit}) {
+            let expenseCategories = [];
+            const result = await Vue.resource('/expense/category').get();
+            const data = await result.json();
+            data.forEach(e => expenseCategories.push(e));
+            commit('getExpenseCategoriesMutation', expenseCategories)
         }
     }
 })

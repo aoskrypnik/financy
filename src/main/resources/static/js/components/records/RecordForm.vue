@@ -11,7 +11,7 @@
                     <v-col cols="12">
                         <v-layout column mt="2">
                             <v-text-field label="Sum" placeholder="Write sum" v-model="expenseSum"/>
-                            <v-select v-model="expenseCategory" :items="expenseCategories"
+                            <v-select v-model="expenseCategory" :items="expenseCategoriesGetter"
                                       label="Choose category"></v-select>
                             <v-text-field label="Comment" placeholder="Write comment" v-model="expenseComment"/>
                             <v-btn class="mt-6" text color="error" @click="saveExpense">Save</v-btn>
@@ -34,7 +34,7 @@
                     <v-col cols="12">
                         <v-layout column mt="2">
                             <v-text-field label="Sum" placeholder="Write sum" v-model="incomeSum"/>
-                            <v-select v-model="incomeCategory" :items="incomeCategories"
+                            <v-select v-model="incomeCategory" :items="incomeCategoriesGetter"
                                       label="Choose category"></v-select>
                             <v-text-field label="Comment" placeholder="Write comment" v-model="incomeComment"/>
                             <v-btn class="mt-6" text color="error" @click="saveIncome">Save</v-btn>
@@ -53,16 +53,6 @@
     export default {
         props: [],
         data() {
-            let incomeCategories = [];
-            this.$resource('/income/category').get().then(result =>
-                result.json().then(data => {
-                    data.forEach(e => incomeCategories.push(e));
-                }));
-            let expenseCategories = [];
-            this.$resource('/expense/category').get().then(result =>
-                result.json().then(data => {
-                    data.forEach(e => expenseCategories.push(e));
-                }));
             return {
                 expenseSum: '',
                 expenseCategory: '',
@@ -72,12 +62,11 @@
                 incomeCategory: '',
                 incomeComment: '',
                 incomeSheet: false,
-                incomeCategories: incomeCategories,
-                expenseCategories: expenseCategories,
+                currentDate: new Date()
             }
         },
         computed: {
-            ...mapGetters(['balanceGetter', 'balanceColorGetter'])
+            ...mapGetters(['balanceGetter', 'balanceColorGetter', 'incomeCategoriesGetter', 'expenseCategoriesGetter'])
         },
         methods: {
             ...mapActions(['addIncomeAction', 'addExpenseAction', 'recalculateBalanceAction']),
@@ -97,6 +86,10 @@
                 this.expenseComment = '';
                 this.expenseSheet = !this.expenseSheet
             },
+        },
+        created() {
+            this.$store.dispatch('getIncomeCategoriesAction');
+            this.$store.dispatch('getExpenseCategoriesAction')
         }
     }
 </script>
