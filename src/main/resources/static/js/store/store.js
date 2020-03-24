@@ -12,7 +12,8 @@ export default new Vuex.Store({
         profile: frontendData.profile,
         balance: frontendData.balance,
         expenseCategories: [],
-        incomeCategories: []
+        incomeCategories: [],
+        dateList: [],
     },
     getters: {
         sortedRecords: state => {
@@ -40,6 +41,9 @@ export default new Vuex.Store({
         },
         expenseCategoriesGetter: state => {
             return state.expenseCategories;
+        },
+        dateListGetter: state => {
+            return state.dateList;
         }
     },
     mutations: {
@@ -81,6 +85,24 @@ export default new Vuex.Store({
         },
         getIncomeCategoriesMutation(state, incomeCategories) {
             state.incomeCategories = incomeCategories
+        },
+        createDatesListMutation(state, datesMap) {
+            const curDate = new Date();
+            let first = new Date(datesMap.first);
+            first.setDate(2);
+            let last = new Date(datesMap.last);
+            last.setDate(2);
+            while (first <= last) {
+                const ye = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(first);
+                const mo = new Intl.DateTimeFormat('en', {month: 'short'}).format(first);
+                const cur = curDate.getFullYear() === first.getFullYear() && curDate.getMonth() === first.getMonth();
+                state.dateList.push({
+                    dateString: mo + ' ' + ye,
+                    dateFormat: first.toISOString().split('T')[0],
+                    isCurrent: cur
+                });
+                first.setMonth(first.getMonth() + 1)
+            }
         }
     },
     actions: {
@@ -112,7 +134,7 @@ export default new Vuex.Store({
         },
         async recalculateBalanceAction({commit}) {
             const currentDate = new Date();
-            const path = '/statistic/balance/' + currentDate.toISOString().substring(0, 10);
+            const path = '/record/balance/' + currentDate.toISOString().substring(0, 10);
             const result = await Vue.resource(path).get();
             const data = await result.json();
             commit('recalculateBalanceMutation', data)
@@ -130,6 +152,11 @@ export default new Vuex.Store({
             const data = await result.json();
             data.forEach(e => expenseCategories.push(e));
             commit('getExpenseCategoriesMutation', expenseCategories)
+        },
+        async createDatesListAction({commit}) {
+            const result = await Vue.resource('/record/bounds').get();
+            const data = await result.json();
+            commit('createDatesListMutation', data)
         }
     }
 })

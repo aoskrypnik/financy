@@ -1,5 +1,14 @@
 <template>
     <v-col cols="12">
+        <v-row class="justify-center mb-3">
+            <v-btn x-small class="mr-2 transparent">
+                <v-icon>keyboard_arrow_left</v-icon>
+            </v-btn>
+            <v-data>{{curDate}}</v-data>
+            <v-btn x-small class="ml-2 transparent">
+                <v-icon>keyboard_arrow_right</v-icon>
+            </v-btn>
+        </v-row>
         <v-row justify="space-around">
             <v-bottom-sheet v-model="expenseSheet" persistent inset>
                 <template v-slot:activator="{ on }">
@@ -62,11 +71,20 @@
                 incomeCategory: '',
                 incomeComment: '',
                 incomeSheet: false,
-                currentDate: new Date()
             }
         },
         computed: {
-            ...mapGetters(['balanceGetter', 'balanceColorGetter', 'incomeCategoriesGetter', 'expenseCategoriesGetter'])
+            ...mapGetters([
+                'balanceGetter',
+                'balanceColorGetter',
+                'incomeCategoriesGetter',
+                'expenseCategoriesGetter',
+                'dateListGetter'
+            ]),
+            curDate() {
+                let curDate = this.$store.getters.dateListGetter.find(e => e.isCurrent === true);
+                return curDate === undefined ? 'asynchronous kek' : curDate.dateString
+            }
         },
         methods: {
             ...mapActions(['addIncomeAction', 'addExpenseAction', 'recalculateBalanceAction']),
@@ -89,8 +107,9 @@
         },
         created() {
             this.$store.dispatch('getIncomeCategoriesAction');
-            this.$store.dispatch('getExpenseCategoriesAction')
-        }
+            this.$store.dispatch('getExpenseCategoriesAction');
+            this.$store.dispatch('createDatesListAction');
+        },
     }
 </script>
 

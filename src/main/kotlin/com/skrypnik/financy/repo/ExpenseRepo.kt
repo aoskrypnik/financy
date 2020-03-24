@@ -8,5 +8,7 @@ import java.time.LocalDateTime
 interface ExpenseRepo : JpaRepository<Expense, Long> {
     fun findByUserAndCreationDateBetween(user: User, from: LocalDateTime, to: LocalDateTime): List<Expense>
 
-    fun findByUser(user: User): List<Expense>
+    fun findFirstByUserOrderByCreationDateAsc(user: User): Expense
+
+    fun findFirstByUserOrderByCreationDateDesc(user: User): Expense
 }

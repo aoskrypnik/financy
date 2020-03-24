@@ -1,9 +1,7 @@
 package com.skrypnik.financy.controller
 
 import com.skrypnik.financy.domain.User
-import com.skrypnik.financy.repo.ExpenseRepo
-import com.skrypnik.financy.repo.IncomeRepo
-import com.skrypnik.financy.service.StatisticService
+import com.skrypnik.financy.service.RecordService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Controller
@@ -21,22 +19,17 @@ class MainController {
     lateinit var profile: String
 
     @Resource
-    lateinit var statisticService: StatisticService
-
-    @Resource
-    lateinit var expenseRepo: ExpenseRepo
-
-    @Resource
-    lateinit var incomeRepo: IncomeRepo
+    lateinit var recordService: RecordService
 
     @GetMapping
     fun getMainPage(model: Model, @AuthenticationPrincipal user: User?): String {
         val data = mutableMapOf<Any, Any?>()
+        val currentDate = LocalDate.now();
         user?.let {
-            data["profile"] = user
-            data["incomes"] = incomeRepo.findByUser(it)
-            data["expenses"] = expenseRepo.findByUser(it)
-            data["balance"] = statisticService.countBalanceByUserAndMonth(user = it, date = LocalDate.now())
+            data["profile"] = it
+            data["incomes"] = recordService.getIncomesByUserAndDate(it, currentDate)
+            data["expenses"] = recordService.getExpensesByUserAndDate(it, currentDate)
+            data["balance"] = recordService.countBalanceByUserAndMonth(it, currentDate)
         }
         model.addAttribute("frontendData", data)
         model.addAttribute("isDevMode", "dev" == profile)
