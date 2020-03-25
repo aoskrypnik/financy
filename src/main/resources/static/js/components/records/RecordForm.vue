@@ -82,8 +82,11 @@
                 'dateListGetter'
             ]),
             curDate() {
+                let date = new Date();
+                const ye = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
+                const mo = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
                 let curDate = this.$store.getters.dateListGetter.find(e => e.isCurrent === true);
-                return curDate === undefined ? 'asynchronous kek' : curDate.dateString
+                return curDate === undefined ? ye + ' ' + mo : curDate.dateString
             }
         },
         methods: {
