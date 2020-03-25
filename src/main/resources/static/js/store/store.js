@@ -103,6 +103,15 @@ export default new Vuex.Store({
                 });
                 first.setMonth(first.getMonth() + 1)
             }
+        },
+        getNewRecordsMutation(state, payload) {
+            state.incomes = payload.data.incomes;
+            state.expenses = payload.data.expenses;
+            const curIndex = state.dateList.findIndex(e => e.isCurrent === true);
+            state.dateList[curIndex].isCurrent = false;
+            payload.moveLeft
+                ? state.dateList[curIndex - 1].isCurrent = true
+                : state.dateList[curIndex + 1].isCurrent = true
         }
     },
     actions: {
@@ -132,9 +141,9 @@ export default new Vuex.Store({
                 dispatch('recalculateBalanceAction')
             }
         },
-        async recalculateBalanceAction({commit}) {
-            const currentDate = new Date();
-            const path = '/record/balance/' + currentDate.toISOString().substring(0, 10);
+        async recalculateBalanceAction({commit}, date) {
+            console.log('balance date: ' + date);
+            const path = '/record/balance/' + date;
             const result = await Vue.resource(path).get();
             const data = await result.json();
             commit('recalculateBalanceMutation', data)
@@ -157,6 +166,26 @@ export default new Vuex.Store({
             const result = await Vue.resource('/record/bounds').get();
             const data = await result.json();
             commit('createDatesListMutation', data)
+        },
+        async moveDateLeftAction({commit, dispatch}, date) {
+            const result = await Vue.resource('record/' + date.dateFormat).get();
+            const data = await result.json();
+            const payload = {
+                data: data,
+                moveLeft: true
+            };
+            commit('getNewRecordsMutation', payload);
+            dispatch('recalculateBalanceAction', date.dateFormat)
+        },
+        async moveDateRightAction({commit, dispatch}, date) {
+            const result = await Vue.resource('record/' + date.dateFormat).get();
+            const data = await result.json();
+            const payload = {
+                data: data,
+                moveLeft: false
+            };
+            commit('getNewRecordsMutation', payload);
+            dispatch('recalculateBalanceAction', date.dateFormat)
         }
     }
 })

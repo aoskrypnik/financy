@@ -1,11 +1,15 @@
 <template>
     <v-col cols="12">
         <v-row class="justify-center mb-3">
-            <v-btn x-small class="mr-2 transparent">
+            <v-btn x-small class="mr-2 transparent"
+                   :disabled="isCurrentDateFirstInList(curDate.dateString, dateListGetter)"
+                   @click="moveDateLeft">
                 <v-icon>keyboard_arrow_left</v-icon>
             </v-btn>
-            <v-data>{{curDate}}</v-data>
-            <v-btn x-small class="ml-2 transparent">
+            <v-data>{{curDate.dateString}}</v-data>
+            <v-btn x-small class="ml-2 transparent"
+                   :disabled="isCurrentDateLastInList(curDate.dateString, dateListGetter)"
+                   @click="moveDateRight">
                 <v-icon>keyboard_arrow_right</v-icon>
             </v-btn>
         </v-row>
@@ -85,12 +89,20 @@
                 let date = new Date();
                 const ye = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
                 const mo = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
+                let tempRes = {dateString: ye + ' ' + mo};
                 let curDate = this.$store.getters.dateListGetter.find(e => e.isCurrent === true);
-                return curDate === undefined ? ye + ' ' + mo : curDate.dateString
+                console.log('cur from component ' + (curDate === undefined ? 'sex' : curDate.dateFormat));
+                return curDate === undefined ? tempRes : curDate
             }
         },
         methods: {
-            ...mapActions(['addIncomeAction', 'addExpenseAction', 'recalculateBalanceAction']),
+            ...mapActions([
+                'addIncomeAction',
+                'addExpenseAction',
+                'recalculateBalanceAction',
+                'moveDateLeftAction',
+                'moveDateRightAction'
+            ]),
             saveIncome() {
                 const record = {sum: this.incomeSum, category: this.incomeCategory, comment: this.incomeComment};
                 this.addIncomeAction(record);
@@ -107,6 +119,24 @@
                 this.expenseComment = '';
                 this.expenseSheet = !this.expenseSheet
             },
+            isCurrentDateFirstInList(current, list) {
+                if (list[0] === undefined) return true;
+                return list[0].dateString === current;
+            },
+            isCurrentDateLastInList(current, list) {
+                if (list[list.length - 1] === undefined) return true;
+                return list[list.length - 1].dateString === current;
+            },
+            moveDateLeft() {
+                const leftDate = this.dateListGetter[this.dateListGetter.indexOf(this.curDate) - 1];
+                console.log('left ' + leftDate.dateFormat);
+                this.moveDateLeftAction(leftDate);
+            },
+            moveDateRight() {
+                const rightDate = this.dateListGetter[this.dateListGetter.indexOf(this.curDate) + 1];
+                console.log('right ' + rightDate.dateFormat);
+                this.moveDateRightAction(rightDate);
+            }
         },
         created() {
             this.$store.dispatch('getIncomeCategoriesAction');
