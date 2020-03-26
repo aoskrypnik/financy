@@ -19,23 +19,15 @@ class RecordServiceImpl : RecordService {
     lateinit var incomeRepo: IncomeRepo
 
     override fun getFirstRecordDateByUser(user: User): LocalDate {
-        val firstExpenseCreationDate = expenseRepo.findFirstByUserOrderByCreationDateAsc(user).creationDate
-        val firstIncomeCreationDate = incomeRepo.findFirstByUserOrderByCreationDateAsc(user).creationDate
-        return if (firstExpenseCreationDate < firstIncomeCreationDate) {
-            firstExpenseCreationDate
-        } else {
-            firstIncomeCreationDate
-        }
+        val firstExpenseCreationDate = expenseRepo.findFirstByUserOrderByCreationDateAsc(user)?.creationDate
+        val firstIncomeCreationDate = incomeRepo.findFirstByUserOrderByCreationDateAsc(user)?.creationDate
+        return chooseDate(firstExpenseCreationDate, firstIncomeCreationDate, true)
     }
 
     override fun getLastRecordDateByUser(user: User): LocalDate {
-        val lastExpenseCreationDate = expenseRepo.findFirstByUserOrderByCreationDateDesc(user).creationDate
-        val lastIncomeCreationDate = incomeRepo.findFirstByUserOrderByCreationDateDesc(user).creationDate
-        return if (lastExpenseCreationDate > lastIncomeCreationDate) {
-            lastExpenseCreationDate
-        } else {
-            lastIncomeCreationDate
-        }
+        val lastExpenseCreationDate = expenseRepo.findFirstByUserOrderByCreationDateDesc(user)?.creationDate
+        val lastIncomeCreationDate = incomeRepo.findFirstByUserOrderByCreationDateDesc(user)?.creationDate
+        return chooseDate(lastExpenseCreationDate, lastIncomeCreationDate, false)
     }
 
     override fun getExpensesByUserAndDate(user: User, date: LocalDate): List<Expense> {
@@ -60,5 +52,17 @@ class RecordServiceImpl : RecordService {
                 .map { e -> e.sum }
                 .fold(0) { acc, next -> acc + next }
         return incomesSum - expensesSum
+    }
+
+    private fun chooseDate(firstDate: LocalDate?, secondDate: LocalDate?,
+                           earliestDate: Boolean): LocalDate {
+        return if (firstDate != null && secondDate != null) {
+            val condition = if (earliestDate) (firstDate < secondDate) else (firstDate > secondDate)
+            if (condition) firstDate else secondDate
+        } else if (firstDate == null && secondDate == null) {
+            LocalDate.now()
+        } else {
+            (firstDate ?: secondDate) as LocalDate
+        }
     }
 }
