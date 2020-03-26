@@ -26,7 +26,12 @@ export default new Vuex.Store({
                 element["type"] = "expense"
             });
             let records = incomes.concat(expenses);
-            return records.sort((a, b) => -(new Date(a.creationDate) - new Date(b.creationDate)))
+            return records.sort(function (a, b) {
+                if (new Date(a.creationDate) - new Date(b.creationDate) === 0) {
+                    return -(a.id - b.id)
+                }
+                return -(new Date(a.creationDate) - new Date(b.creationDate))
+            })
         },
         balanceGetter: state => {
             return state.balance
