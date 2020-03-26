@@ -45,7 +45,7 @@ class RecordServiceImpl : RecordService {
 
     override fun countBalanceByUserAndMonth(user: User, date: LocalDate): Int {
         val from = LocalDate.of(date.year, date.month, 1)
-        val to = LocalDate.of(date.year, date.month + 1, 1)
+        val to = LocalDate.of(date.year, date.month + 1, 1).minusDays(1)
         val incomesSum = incomeRepo.findByUserAndCreationDateBetween(user, from, to)
                 .map { i -> i.sum }
                 .fold(0) { acc, next -> acc + next }

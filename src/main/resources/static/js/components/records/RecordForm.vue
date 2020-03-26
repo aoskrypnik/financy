@@ -134,7 +134,6 @@
                 const mo = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
                 let tempRes = {dateString: ye + ' ' + mo};
                 let curDate = this.$store.getters.dateListGetter.find(e => e.isCurrent === true);
-                console.log('cur from component ' + (curDate === undefined ? 'sex' : curDate.dateFormat));
                 return curDate === undefined ? tempRes : curDate
             }
         },
@@ -200,7 +199,7 @@
         created() {
             this.$store.dispatch('getIncomeCategoriesAction');
             this.$store.dispatch('getExpenseCategoriesAction');
-            this.$store.dispatch('createDatesListAction');
+            this.$store.dispatch('createDatesListAction', new Date());
         },
     }
 </script>
