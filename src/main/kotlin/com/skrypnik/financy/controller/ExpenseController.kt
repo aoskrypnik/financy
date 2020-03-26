@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDateTime
 import javax.annotation.Resource
 
 @RestController
@@ -35,7 +34,6 @@ class ExpenseController {
     @PostMapping
     fun createExpense(@RequestBody expense: Expense): Expense {
         expense.user = userService.getCurrentUser()
-        expense.creationDate = LocalDateTime.now()
         return expenseRepo.save(expense)
     }
 

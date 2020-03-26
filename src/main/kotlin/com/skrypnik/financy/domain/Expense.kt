@@ -1,7 +1,7 @@
 package com.skrypnik.financy.domain
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import java.time.LocalDateTime
+import java.time.LocalDate
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -24,8 +24,8 @@ data class Expense(
         @JoinColumn(name = "username", nullable = false)
         var user: User? = null,
         @Column(nullable = false)
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-        var creationDate: LocalDateTime? = null,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        var creationDate: LocalDate,
         @Column(nullable = false)
         var sum: Int,
         @Column(nullable = true)

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDateTime
 import javax.annotation.Resource
 
 @RestController
@@ -35,7 +34,6 @@ class IncomeController {
     @PostMapping
     fun createIncome(@RequestBody income: Income): Income {
         income.user = userService.getCurrentUser()
-        income.creationDate = LocalDateTime.now()
         return incomeRepo.save(income)
     }
 

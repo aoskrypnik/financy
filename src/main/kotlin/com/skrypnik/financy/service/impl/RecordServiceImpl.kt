@@ -8,7 +8,6 @@ import com.skrypnik.financy.repo.IncomeRepo
 import com.skrypnik.financy.service.RecordService
 import org.springframework.stereotype.Service
 import java.time.LocalDate
-import java.time.LocalDateTime
 import javax.annotation.Resource
 
 @Service
@@ -22,38 +21,38 @@ class RecordServiceImpl : RecordService {
     override fun getFirstRecordDateByUser(user: User): LocalDate {
         val firstExpenseCreationDate = expenseRepo.findFirstByUserOrderByCreationDateAsc(user).creationDate
         val firstIncomeCreationDate = incomeRepo.findFirstByUserOrderByCreationDateAsc(user).creationDate
-        return if (firstExpenseCreationDate!! < firstIncomeCreationDate!!) {
-            firstExpenseCreationDate.run { toLocalDate() }
+        return if (firstExpenseCreationDate < firstIncomeCreationDate) {
+            firstExpenseCreationDate
         } else {
-            firstIncomeCreationDate.run { toLocalDate() }
+            firstIncomeCreationDate
         }
     }
 
     override fun getLastRecordDateByUser(user: User): LocalDate {
         val lastExpenseCreationDate = expenseRepo.findFirstByUserOrderByCreationDateDesc(user).creationDate
         val lastIncomeCreationDate = incomeRepo.findFirstByUserOrderByCreationDateDesc(user).creationDate
-        return if (lastExpenseCreationDate!! > lastIncomeCreationDate!!) {
-            lastExpenseCreationDate.run { toLocalDate() }
+        return if (lastExpenseCreationDate > lastIncomeCreationDate) {
+            lastExpenseCreationDate
         } else {
-            lastIncomeCreationDate.run { toLocalDate() }
+            lastIncomeCreationDate
         }
     }
 
     override fun getExpensesByUserAndDate(user: User, date: LocalDate): List<Expense> {
-        val from = LocalDateTime.of(date.year, date.month, 1, 0, 0)
-        val to = LocalDateTime.of(date.year, date.month + 1, 1, 0, 0)
+        val from = LocalDate.of(date.year, date.month, 1)
+        val to = LocalDate.of(date.year, date.month + 1, 1)
         return expenseRepo.findByUserAndCreationDateBetween(user, from, to)
     }
 
     override fun getIncomesByUserAndDate(user: User, date: LocalDate): List<Income> {
-        val from = LocalDateTime.of(date.year, date.month, 1, 0, 0)
-        val to = LocalDateTime.of(date.year, date.month + 1, 1, 0, 0)
+        val from = LocalDate.of(date.year, date.month, 1)
+        val to = LocalDate.of(date.year, date.month + 1, 1)
         return incomeRepo.findByUserAndCreationDateBetween(user, from, to)
     }
 
     override fun countBalanceByUserAndMonth(user: User, date: LocalDate): Int {
-        val from = LocalDateTime.of(date.year, date.month, 1, 0, 0)
-        val to = LocalDateTime.of(date.year, date.month + 1, 1, 0, 0)
+        val from = LocalDate.of(date.year, date.month, 1)
+        val to = LocalDate.of(date.year, date.month + 1, 1)
         val incomesSum = incomeRepo.findByUserAndCreationDateBetween(user, from, to)
                 .map { i -> i.sum }
                 .fold(0) { acc, next -> acc + next }

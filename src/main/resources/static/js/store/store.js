@@ -142,7 +142,6 @@ export default new Vuex.Store({
             }
         },
         async recalculateBalanceAction({commit}, date) {
-            console.log('balance date: ' + date);
             const path = '/record/balance/' + date;
             const result = await Vue.resource(path).get();
             const data = await result.json();

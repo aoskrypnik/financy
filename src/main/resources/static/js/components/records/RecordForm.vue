@@ -27,8 +27,28 @@
                             <v-select v-model="expenseCategory" :items="expenseCategoriesGetter"
                                       label="Choose category"></v-select>
                             <v-text-field label="Comment" placeholder="Write comment" v-model="expenseComment"/>
+                            <v-menu
+                                    ref="menu1"
+                                    v-model="menu1"
+                                    :close-on-content-click="false"
+                                    transition="scale-transition"
+                                    offset-y
+                                    max-width="290px"
+                                    min-width="290px"
+                            >
+                                <template v-slot:activator="{ on }">
+                                    <v-text-field
+                                            v-model="creationDate"
+                                            label="Date"
+                                            hint="YYYY-MM-DD format"
+                                            persistent-hint
+                                            v-on="on"
+                                    ></v-text-field>
+                                </template>
+                                <v-date-picker v-model="creationDate" no-title @input="menu1 = false"></v-date-picker>
+                            </v-menu>
                             <v-btn class="mt-6" text color="error" @click="saveExpense">Save</v-btn>
-                            <v-btn class="mt-6" text color="primary" @click="expenseSheet=!expenseSheet">Close</v-btn>
+                            <v-btn class="mt-6" text color="primary" @click="close(true)">Close</v-btn>
                         </v-layout>
                     </v-col>
                 </v-sheet>
@@ -50,8 +70,28 @@
                             <v-select v-model="incomeCategory" :items="incomeCategoriesGetter"
                                       label="Choose category"></v-select>
                             <v-text-field label="Comment" placeholder="Write comment" v-model="incomeComment"/>
+                            <v-menu
+                                    ref="menu1"
+                                    v-model="menu2"
+                                    :close-on-content-click="false"
+                                    transition="scale-transition"
+                                    offset-y
+                                    max-width="290px"
+                                    min-width="290px"
+                            >
+                                <template v-slot:activator="{ on }">
+                                    <v-text-field
+                                            v-model="creationDate"
+                                            label="Date"
+                                            hint="YYYY-MM-DD format"
+                                            persistent-hint
+                                            v-on="on"
+                                    ></v-text-field>
+                                </template>
+                                <v-date-picker v-model="creationDate" no-title @input="menu2 = false"></v-date-picker>
+                            </v-menu>
                             <v-btn class="mt-6" text color="error" @click="saveIncome">Save</v-btn>
-                            <v-btn class="mt-6" text color="primary" @click="incomeSheet=!incomeSheet">Close</v-btn>
+                            <v-btn class="mt-6" text color="primary" @click="close(false)">Close</v-btn>
                         </v-layout>
                     </v-col>
                 </v-sheet>
@@ -75,6 +115,9 @@
                 incomeCategory: '',
                 incomeComment: '',
                 incomeSheet: false,
+                creationDate: new Date().toISOString().substr(0, 10),
+                menu1: false,
+                menu2: false,
             }
         },
         computed: {
@@ -104,20 +147,30 @@
                 'moveDateRightAction'
             ]),
             saveIncome() {
-                const record = {sum: this.incomeSum, category: this.incomeCategory, comment: this.incomeComment};
+                const record = {
+                    sum: this.incomeSum,
+                    category: this.incomeCategory,
+                    comment: this.incomeComment,
+                    creationDate: this.creationDate
+                };
                 this.addIncomeAction(record);
                 this.incomeSum = '';
                 this.incomeCategory = '';
                 this.incomeComment = '';
-                this.incomeSheet = !this.incomeSheet
+                this.close(false);
             },
             saveExpense() {
-                const record = {sum: this.expenseSum, category: this.expenseCategory, comment: this.expenseComment};
+                const record = {
+                    sum: this.expenseSum,
+                    category: this.expenseCategory,
+                    comment: this.expenseComment,
+                    creationDate: this.creationDate
+                };
                 this.addExpenseAction(record);
                 this.expenseSum = '';
                 this.expenseCategory = '';
                 this.expenseComment = '';
-                this.expenseSheet = !this.expenseSheet
+                this.close(true);
             },
             isCurrentDateFirstInList(current, list) {
                 if (list[0] === undefined) return true;
@@ -129,13 +182,19 @@
             },
             moveDateLeft() {
                 const leftDate = this.dateListGetter[this.dateListGetter.indexOf(this.curDate) - 1];
-                console.log('left ' + leftDate.dateFormat);
                 this.moveDateLeftAction(leftDate);
             },
             moveDateRight() {
                 const rightDate = this.dateListGetter[this.dateListGetter.indexOf(this.curDate) + 1];
-                console.log('right ' + rightDate.dateFormat);
                 this.moveDateRightAction(rightDate);
+            },
+            close(isExpense) {
+                isExpense
+                    ? this.expenseSheet = !this.expenseSheet
+                    : this.incomeSheet = !this.incomeSheet;
+                this.creationDate = new Date().toISOString().substr(0, 10);
+                this.menu1 = false;
+                this.menu2 = false;
             }
         },
         created() {
