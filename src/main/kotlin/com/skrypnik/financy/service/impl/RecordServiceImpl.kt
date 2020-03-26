@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 import javax.annotation.Resource
 
+
 @Service
 class RecordServiceImpl : RecordService {
     @Resource
@@ -32,13 +33,13 @@ class RecordServiceImpl : RecordService {
 
     override fun getExpensesByUserAndDate(user: User, date: LocalDate): List<Expense> {
         val from = LocalDate.of(date.year, date.month, 1)
-        val to = LocalDate.of(date.year, date.month + 1, 1)
+        val to = LocalDate.of(date.year, date.month + 1, 1).minusDays(1)
         return expenseRepo.findByUserAndCreationDateBetween(user, from, to)
     }
 
     override fun getIncomesByUserAndDate(user: User, date: LocalDate): List<Income> {
         val from = LocalDate.of(date.year, date.month, 1)
-        val to = LocalDate.of(date.year, date.month + 1, 1)
+        val to = LocalDate.of(date.year, date.month + 1, 1).minusDays(1)
         return incomeRepo.findByUserAndCreationDateBetween(user, from, to)
     }
 
