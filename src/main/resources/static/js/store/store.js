@@ -119,13 +119,13 @@ export default new Vuex.Store({
             const result = await Vue.resource('/income{/id}').save({}, record);
             const data = await result.json();
             commit('addIncomeMutation', data);
-            dispatch('recalculateBalanceAction')
+            dispatch('recalculateBalanceAction', record.creationDate)
         },
         async addExpenseAction({commit, dispatch}, record) {
             const result = await Vue.resource('/expense{/id}').save({}, record);
             const data = await result.json();
             commit('addExpenseMutation', data);
-            dispatch('recalculateBalanceAction')
+            dispatch('recalculateBalanceAction', record.creationDate)
         },
         async removeIncomeAction({commit, dispatch}, income) {
             const result = await Vue.resource('/income{/id}').remove({id: income.id});
