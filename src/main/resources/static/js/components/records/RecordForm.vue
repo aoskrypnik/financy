@@ -1,18 +1,6 @@
 <template>
     <v-col cols="12">
-        <v-row class="justify-center mb-3">
-            <v-btn x-small class="mr-2 transparent"
-                   :disabled="isCurrentDateFirstInList(curDate.dateString, dateListGetter)"
-                   @click="moveDateLeft">
-                <v-icon>keyboard_arrow_left</v-icon>
-            </v-btn>
-            <v-data>{{curDate.dateString}}</v-data>
-            <v-btn x-small class="ml-2 transparent"
-                   :disabled="isCurrentDateLastInList(curDate.dateString, dateListGetter)"
-                   @click="moveDateRight">
-                <v-icon>keyboard_arrow_right</v-icon>
-            </v-btn>
-        </v-row>
+        <record-date></record-date>
         <v-row justify="space-around">
             <v-bottom-sheet v-model="expenseSheet" persistent inset>
                 <template v-slot:activator="{ on }">
@@ -101,10 +89,13 @@
 </template>
 
 <script>
+    import RecordDate from "components/records/RecordDate.vue";
     import {mapActions, mapGetters} from 'vuex'
 
     export default {
-        props: [],
+        components: {
+            RecordDate
+        },
         data() {
             return {
                 expenseSum: '',
@@ -128,22 +119,12 @@
                 'expenseCategoriesGetter',
                 'dateListGetter'
             ]),
-            curDate() {
-                let date = new Date();
-                const ye = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
-                const mo = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
-                let tempRes = {dateString: ye + ' ' + mo};
-                let curDate = this.$store.getters.dateListGetter.find(e => e.isCurrent === true);
-                return curDate === undefined ? tempRes : curDate
-            }
         },
         methods: {
             ...mapActions([
                 'addIncomeAction',
                 'addExpenseAction',
                 'recalculateBalanceAction',
-                'moveDateLeftAction',
-                'moveDateRightAction'
             ]),
             saveIncome() {
                 const record = {
@@ -170,22 +151,6 @@
                 this.expenseCategory = '';
                 this.expenseComment = '';
                 this.close(true);
-            },
-            isCurrentDateFirstInList(current, list) {
-                if (list[0] === undefined) return true;
-                return list[0].dateString === current;
-            },
-            isCurrentDateLastInList(current, list) {
-                if (list[list.length - 1] === undefined) return true;
-                return list[list.length - 1].dateString === current;
-            },
-            moveDateLeft() {
-                const leftDate = this.dateListGetter[this.dateListGetter.indexOf(this.curDate) - 1];
-                this.moveDateLeftAction(leftDate);
-            },
-            moveDateRight() {
-                const rightDate = this.dateListGetter[this.dateListGetter.indexOf(this.curDate) + 1];
-                this.moveDateRightAction(rightDate);
             },
             close(isExpense) {
                 isExpense
