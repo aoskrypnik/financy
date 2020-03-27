@@ -1,7 +1,9 @@
 package com.skrypnik.financy.service.impl
 
 import com.skrypnik.financy.domain.Expense
+import com.skrypnik.financy.domain.ExpenseCategoryEnum
 import com.skrypnik.financy.domain.Income
+import com.skrypnik.financy.domain.IncomeCategoryEnum
 import com.skrypnik.financy.domain.User
 import com.skrypnik.financy.repo.ExpenseRepo
 import com.skrypnik.financy.repo.IncomeRepo
@@ -31,16 +33,16 @@ class RecordServiceImpl : RecordService {
         return chooseDate(lastExpenseCreationDate, lastIncomeCreationDate, false)
     }
 
-    override fun getExpensesByUserAndDate(user: User, date: LocalDate): List<Expense> {
+    override fun getExpensesByUserAndDate(user: User, date: LocalDate): Map<ExpenseCategoryEnum, List<Expense>> {
         val from = LocalDate.of(date.year, date.month, 1)
         val to = LocalDate.of(date.year, date.month + 1, 1).minusDays(1)
-        return expenseRepo.findByUserAndCreationDateBetween(user, from, to)
+        return expenseRepo.findByUserAndCreationDateBetween(user, from, to).groupBy { it.category }
     }
 
-    override fun getIncomesByUserAndDate(user: User, date: LocalDate): List<Income> {
+    override fun getIncomesByUserAndDate(user: User, date: LocalDate): Map<IncomeCategoryEnum, List<Income>> {
         val from = LocalDate.of(date.year, date.month, 1)
         val to = LocalDate.of(date.year, date.month + 1, 1).minusDays(1)
-        return incomeRepo.findByUserAndCreationDateBetween(user, from, to)
+        return incomeRepo.findByUserAndCreationDateBetween(user, from, to).groupBy { it.category }
     }
 
     override fun countBalanceByUserAndMonth(user: User, date: LocalDate): Int {

@@ -5,6 +5,15 @@ import Vuex from 'vuex';
 Vue.use(VueResource);
 Vue.use(Vuex);
 
+function sortRecords() {
+    return function (a, b) {
+        if (new Date(a.creationDate) - new Date(b.creationDate) === 0) {
+            return -(a.id - b.id)
+        }
+        return -(new Date(a.creationDate) - new Date(b.creationDate))
+    };
+}
+
 export default new Vuex.Store({
     state: {
         incomes: frontendData.incomes,
@@ -17,21 +26,29 @@ export default new Vuex.Store({
     },
     getters: {
         sortedRecords: state => {
-            let incomes = state.incomes ? state.incomes : [];
-            incomes.forEach(function (element) {
-                element["type"] = "income"
-            });
-            let expenses = state.expenses ? state.expenses : [];
-            expenses.forEach(function (element) {
-                element["type"] = "expense"
-            });
-            let records = incomes.concat(expenses);
-            return records.sort(function (a, b) {
-                if (new Date(a.creationDate) - new Date(b.creationDate) === 0) {
-                    return -(a.id - b.id)
-                }
-                return -(new Date(a.creationDate) - new Date(b.creationDate))
-            })
+            let records = [];
+
+            let incomes = state.incomes ? state.incomes : {};
+            for (let key in incomes) {
+                let record = {
+                    'category': key,
+                    'list': incomes[key].sort(sortRecords()),
+                    'type': 'income'
+                };
+                records.push(record);
+            }
+
+            let expenses = state.expenses ? state.expenses : {};
+            for (let key in expenses) {
+                let record = {
+                    'category': key,
+                    'list': expenses[key].sort(sortRecords()),
+                    'type': 'expense'
+                };
+                records.push(record);
+            }
+
+            return records
         },
         balanceGetter: state => {
             return state.balance
@@ -53,16 +70,24 @@ export default new Vuex.Store({
     },
     mutations: {
         addIncomeMutation(state, income) {
-            state.incomes = [
-                ...state.incomes,
-                income
-            ]
+            const givenCategory = income.category;
+            for (let key in state.incomes) {
+                if (givenCategory === key && state.incomes.hasOwnProperty(key)) {
+                    state.incomes[key].push(income);
+                    return
+                }
+            }
+            Vue.set(state.incomes, givenCategory, [income]);
         },
         addExpenseMutation(state, expense) {
-            state.expenses = [
-                ...state.expenses,
-                expense
-            ]
+            const givenCategory = expense.category;
+            for (let key in state.expenses) {
+                if (expense.category === key && state.expenses.hasOwnProperty(key)) {
+                    state.expenses[key].push(expense);
+                    return
+                }
+            }
+            Vue.set(state.expenses, givenCategory, [expense]);
         },
         removeIncomeMutation(state, income) {
             const deletionIndex = state.incomes.findIndex(item => item.id === income.id);

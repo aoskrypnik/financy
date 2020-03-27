@@ -1,9 +1,9 @@
 <template>
     <v-layout align-content-space-around justify-start column>
         <record-form/>
-        <record-row v-for="record in sortedRecords"
-                    :key="record.id"
-                    :record="record"/>
+        <record-row v-for="recordsGroup in sortedRecords"
+                    :key="recordsGroup.category+recordsGroup.type"
+                    :recordsGroup="recordsGroup"/>
     </v-layout>
 </template>
 
@@ -16,11 +16,6 @@
         components: {
             RecordRow,
             RecordForm
-        },
-        data() {
-            return {
-                record: null
-            }
         },
         computed: mapGetters(['sortedRecords'])
     }
