@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <v-card class="mb-2">
         <v-card-actions><b>{{record.sum}}</b></v-card-actions>
         <v-card-actions v-if="record.comment !== ''">• {{record.comment}}</v-card-actions>
         <v-card-actions>
@@ -21,13 +21,13 @@
     }
 
     export default {
-        props: ['record'],
+        props: ['record', 'type'],
         methods: {
             ...mapActions(['removeExpenseAction', 'removeIncomeAction']),
             del() {
-                if (this.record.type === 'income') {
+                if (this.type === 'income') {
                     this.removeIncomeAction(this.record)
-                } else if (this.record.type === 'expense') {
+                } else if (this.type === 'expense') {
                     this.removeExpenseAction(this.record)
                 }
             }
@@ -35,6 +35,6 @@
     }
 </script>
 
-<style scoped>
+<style>
 
 </style>

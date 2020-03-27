@@ -10,7 +10,8 @@
             <v-expansion-panel-content>
                 <record-detail v-for="element in recordsGroup.list"
                                :key="element.id"
-                               :record="element"/>
+                               :record="element"
+                               :type="recordsGroup.type"/>
             </v-expansion-panel-content>
         </v-expansion-panel>
     </v-expansion-panels>

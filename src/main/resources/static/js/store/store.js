@@ -30,22 +30,26 @@ export default new Vuex.Store({
 
             let incomes = state.incomes ? state.incomes : {};
             for (let key in incomes) {
-                let record = {
-                    'category': key,
-                    'list': incomes[key].sort(sortRecords()),
-                    'type': 'income'
-                };
-                records.push(record);
+                if (incomes[key] !== undefined) {
+                    let record = {
+                        'category': key,
+                        'list': incomes[key].sort(sortRecords()),
+                        'type': 'income'
+                    };
+                    records.push(record);
+                }
             }
 
             let expenses = state.expenses ? state.expenses : {};
             for (let key in expenses) {
-                let record = {
-                    'category': key,
-                    'list': expenses[key].sort(sortRecords()),
-                    'type': 'expense'
-                };
-                records.push(record);
+                if (expenses[key] !== undefined) {
+                    let record = {
+                        'category': key,
+                        'list': expenses[key].sort(sortRecords()),
+                        'type': 'expense'
+                    };
+                    records.push(record);
+                }
             }
 
             return records
@@ -90,22 +94,30 @@ export default new Vuex.Store({
             Vue.set(state.expenses, givenCategory, [expense]);
         },
         removeIncomeMutation(state, income) {
-            const deletionIndex = state.incomes.findIndex(item => item.id === income.id);
+            let copy = state.incomes[income.category];
+            const deletionIndex = copy.findIndex(item => item.id === income.id);
             if (deletionIndex > -1) {
-                state.incomes = [
-                    ...state.incomes.slice(0, deletionIndex),
-                    ...state.incomes.slice(deletionIndex + 1)
+                copy = [
+                    ...copy.slice(0, deletionIndex),
+                    ...copy.slice(deletionIndex + 1)
                 ]
             }
+            copy.length === 0
+                ? Vue.set(state.incomes, income.category, undefined)
+                : state.incomes[income.category] = copy;
         },
         removeExpenseMutation(state, expense) {
-            const deletionIndex = state.expenses.findIndex(item => item.id === expense.id);
+            let copy = state.expenses[expense.category];
+            const deletionIndex = copy.findIndex(item => item.id === expense.id);
             if (deletionIndex > -1) {
-                state.expenses = [
-                    ...state.expenses.slice(0, deletionIndex),
-                    ...state.expenses.slice(deletionIndex + 1)
+                copy = [
+                    ...copy.slice(0, deletionIndex),
+                    ...copy.slice(deletionIndex + 1)
                 ]
             }
+            copy.length === 0
+                ? Vue.set(state.expenses, expense.category, undefined)
+                : state.expenses[expense.category] = copy;
         },
         recalculateBalanceMutation(state, newBalance) {
             state.balance = parseInt(newBalance);
