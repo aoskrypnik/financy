@@ -4,6 +4,6 @@ enum class IncomeCategoryEnum {
     Deposit,
     Salary,
     Prize,
-    Present,
+    Business,
     Other
 }

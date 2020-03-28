@@ -23,8 +23,34 @@ export default new Vuex.Store({
         expenseCategories: [],
         incomeCategories: [],
         dateList: [],
+        iconsMap: {
+            'FoodExpense': 'restaurant_menu',
+            'CafeExpense': 'local_cafe',
+            'MedicineExpense': 'local_hospital',
+            'ShoppingExpense': 'shopping_basket',
+            'EntertainmentExpense': 'casino',
+            'TransportExpense': 'directions_bus',
+            'TaxiExpense': 'local_taxi',
+            'SportExpense': 'fitness_center',
+            'TripsExpense': 'flight_takeoff',
+            'PhoneExpense': 'call',
+            'PresentsExpense': 'local_florist',
+            'BillsExpense': 'house',
+            'HygieneExpense': 'bathtub',
+            'PetsExpense': 'pets',
+            'CarExpense': 'directions_car',
+            'OtherExpense': 'remove_circle_outline',
+            'DepositIncome': 'money',
+            'SalaryIncome': 'work',
+            'PrizeIncome': 'emoji_events',
+            'BusinessIncome': 'attach_money',
+            'OtherIncome': 'add_circle_outline'
+        }
     },
     getters: {
+        iconsMapGetter: state => {
+            return state.iconsMap
+        },
         sortedRecords: state => {
             let records = [];
 
@@ -34,7 +60,7 @@ export default new Vuex.Store({
                     let record = {
                         'category': key,
                         'list': incomes[key].sort(sortRecords()),
-                        'type': 'income'
+                        'type': 'Income'
                     };
                     records.push(record);
                 }
@@ -46,7 +72,7 @@ export default new Vuex.Store({
                     let record = {
                         'category': key,
                         'list': expenses[key].sort(sortRecords()),
-                        'type': 'expense'
+                        'type': 'Expense'
                     };
                     records.push(record);
                 }

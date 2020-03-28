@@ -25,9 +25,9 @@
         methods: {
             ...mapActions(['removeExpenseAction', 'removeIncomeAction']),
             del() {
-                if (this.type === 'income') {
+                if (this.type === 'Income') {
                     this.removeIncomeAction(this.record)
-                } else if (this.type === 'expense') {
+                } else if (this.type === 'Expense') {
                     this.removeExpenseAction(this.record)
                 }
             }
