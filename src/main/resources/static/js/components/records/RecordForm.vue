@@ -43,7 +43,7 @@
             </v-bottom-sheet>
             <v-btn large outlined :color="balanceColorGetter"
                    :class="{'disable-events': true}" height="56px" max-width="146px">
-                Balance {{balanceGetter}}
+                Balance {{balanceGetter}}€
             </v-btn>
             <v-bottom-sheet v-model="incomeSheet" persistent inset>
                 <template v-slot:activator="{ on }">
