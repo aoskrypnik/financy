@@ -2,7 +2,7 @@
     <v-expansion-panels class="mb-2">
         <v-expansion-panel>
             <v-expansion-panel-header>
-                <i>{{recordsGroup.category}} {{recordsGroup.type}}</i>
+                <i>{{recordsGroup.category}} {{recordsGroup.type}} {{recordGroupBalance}}</i>
                 <template v-slot:actions>
                     <v-icon>expand_more</v-icon>
                 </template>
@@ -22,6 +22,12 @@
 
     export default {
         props: ['recordsGroup'],
+        computed: {
+            recordGroupBalance() {
+                if (this.recordsGroup.list.length === 1) return this.recordsGroup.list[0].sum;
+                return this.recordsGroup.list.reduce((a, b) => a.sum + b.sum)
+            }
+        },
         components: {
             RecordDetail
         },
