@@ -5,7 +5,9 @@
                 <v-col class="pa-0">
                     <v-icon class="mr-2">{{iconsMapGetter[recordsGroup.category+recordsGroup.type]}}</v-icon>
                     <b class="text-left">{{recordsGroup.category}}</b>
-                    <i class="float-right"> {{recordGroupBalance}}</i>
+                </v-col>
+                <v-col>
+                    <v-layout class="float-right" :style="{ 'color': groupColor }">{{recordGroupBalance}}</v-layout>
                 </v-col>
                 <template v-slot:actions>
                     <v-icon>expand_more</v-icon>
@@ -34,6 +36,9 @@
             recordGroupBalance() {
                 if (this.recordsGroup.list.length === 1) return this.recordsGroup.list[0].sum;
                 return this.recordsGroup.list.reduce((a, b) => a.sum + b.sum)
+            },
+            groupColor() {
+                return (this.recordsGroup.type === 'Expense') ? 'red' : 'green'
             }
         },
         components: {
