@@ -117,7 +117,6 @@
                 'balanceColorGetter',
                 'incomeCategoriesGetter',
                 'expenseCategoriesGetter',
-                'dateListGetter'
             ]),
         },
         methods: {

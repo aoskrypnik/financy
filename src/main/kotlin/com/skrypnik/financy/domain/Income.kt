@@ -1,6 +1,7 @@
 package com.skrypnik.financy.domain
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.skrypnik.financy.domain.enums.IncomeCategoryEnum
 import java.time.LocalDate
 import javax.persistence.Column
 import javax.persistence.Entity

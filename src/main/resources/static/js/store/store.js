@@ -23,6 +23,7 @@ export default new Vuex.Store({
         expenseCategories: [],
         incomeCategories: [],
         dateList: [],
+        toBeExpanded: undefined,
         iconsMap: {
             'FoodExpense': 'restaurant_menu',
             'CafeExpense': 'local_cafe',
@@ -77,7 +78,6 @@ export default new Vuex.Store({
                     records.push(record);
                 }
             }
-
             return records
         },
         balanceGetter: state => {
@@ -96,6 +96,9 @@ export default new Vuex.Store({
         },
         dateListGetter: state => {
             return state.dateList;
+        },
+        toBeExpandedGetter: state => {
+            return state.toBeExpanded;
         }
     },
     mutations: {
@@ -107,6 +110,7 @@ export default new Vuex.Store({
                     return
                 }
             }
+            state.toBeExpanded = income.id;
             Vue.set(state.incomes, givenCategory, [income]);
         },
         addExpenseMutation(state, expense) {
@@ -117,6 +121,7 @@ export default new Vuex.Store({
                     return
                 }
             }
+            state.toBeExpanded = expense.id;
             Vue.set(state.expenses, givenCategory, [expense]);
         },
         removeIncomeMutation(state, income) {

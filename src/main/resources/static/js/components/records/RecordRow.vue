@@ -1,5 +1,5 @@
 <template>
-    <v-expansion-panels class="mb-2">
+    <v-expansion-panels v-model="panel" class="mb-2">
         <v-expansion-panel>
             <v-expansion-panel-header>
                 <v-col class="pa-0" cols="8">
@@ -30,13 +30,22 @@
 
     export default {
         props: ['recordsGroup'],
+        data() {
+            return {
+                panel: this.recordsGroup.list.filter(e => e.id = this.$store.getters.toBeExpandedGetter).length === 1 ? 0 : -1
+            }
+        },
         computed: {
             ...mapGetters([
-                'iconsMapGetter'
+                'iconsMapGetter', 'toBeExpandedGetter'
             ]),
             recordGroupBalance() {
                 if (this.recordsGroup.list.length === 1) return this.recordsGroup.list[0].sum;
-                return this.recordsGroup.list.reduce((a, b) => a.sum + b.sum)
+                let x = 0;
+                for (let i = 0; i < this.recordsGroup.list.length; i++) {
+                    x += this.recordsGroup.list[i].sum;
+                }
+                return x;
             },
             groupColor() {
                 return (this.recordsGroup.type === 'Expense') ? 'red' : 'green'

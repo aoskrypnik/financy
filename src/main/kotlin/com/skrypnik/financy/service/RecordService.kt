@@ -1,9 +1,9 @@
 package com.skrypnik.financy.service
 
 import com.skrypnik.financy.domain.Expense
-import com.skrypnik.financy.domain.ExpenseCategoryEnum
+import com.skrypnik.financy.domain.enums.ExpenseCategoryEnum
 import com.skrypnik.financy.domain.Income
-import com.skrypnik.financy.domain.IncomeCategoryEnum
+import com.skrypnik.financy.domain.enums.IncomeCategoryEnum
 import com.skrypnik.financy.domain.User
 import java.time.LocalDate
 

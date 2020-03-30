@@ -1,4 +1,4 @@
-package com.skrypnik.financy.domain
+package com.skrypnik.financy.domain.enums
 
 enum class IncomeCategoryEnum {
     Deposit,

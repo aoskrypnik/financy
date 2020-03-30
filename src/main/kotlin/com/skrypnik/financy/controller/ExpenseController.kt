@@ -1,7 +1,7 @@
 package com.skrypnik.financy.controller
 
 import com.skrypnik.financy.domain.Expense
-import com.skrypnik.financy.domain.ExpenseCategoryEnum
+import com.skrypnik.financy.domain.enums.ExpenseCategoryEnum
 import com.skrypnik.financy.repo.ExpenseRepo
 import com.skrypnik.financy.service.UserService
 import org.springframework.beans.BeanUtils.copyProperties
