@@ -54,7 +54,6 @@ export default new Vuex.Store({
         },
         sortedRecords: state => {
             let records = [];
-
             let incomes = state.incomes ? state.incomes : {};
             for (let key in incomes) {
                 if (incomes[key] !== undefined) {
@@ -66,7 +65,6 @@ export default new Vuex.Store({
                     records.push(record);
                 }
             }
-
             let expenses = state.expenses ? state.expenses : {};
             for (let key in expenses) {
                 if (expenses[key] !== undefined) {
@@ -78,6 +76,14 @@ export default new Vuex.Store({
                     records.push(record);
                 }
             }
+            records.sort((a, b) => {
+                let aa = new Date(a.list[0].creationDate);
+                let bb = new Date(b.list[0].creationDate);
+                if (aa - bb === 0) {
+                    return -(a.list[0].id - b.list[0].id)
+                }
+                return -(new Date(a.list[0].creationDate) - new Date(b.list[0].creationDate))
+            });
             return records
         },
         balanceGetter: state => {
@@ -101,24 +107,26 @@ export default new Vuex.Store({
     mutations: {
         addIncomeMutation(state, income) {
             const givenCategory = income.category;
+            state.toBeExpanded = income.id;
+            console.log(state.toBeExpanded);
             for (let key in state.incomes) {
                 if (givenCategory === key && state.incomes.hasOwnProperty(key)) {
                     state.incomes[key].push(income);
                     return
                 }
             }
-            state.toBeExpanded = income.id;
             Vue.set(state.incomes, givenCategory, [income]);
         },
         addExpenseMutation(state, expense) {
             const givenCategory = expense.category;
+            state.toBeExpanded = expense.id;
+            console.log(state.toBeExpanded);
             for (let key in state.expenses) {
                 if (expense.category === key && state.expenses.hasOwnProperty(key)) {
                     state.expenses[key].push(expense);
                     return
                 }
             }
-            state.toBeExpanded = expense.id;
             Vue.set(state.expenses, givenCategory, [expense]);
         },
         removeIncomeMutation(state, income) {

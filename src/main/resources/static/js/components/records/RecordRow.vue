@@ -30,22 +30,26 @@
 
     export default {
         props: ['recordsGroup'],
-        data() {
-            let panel = -1;
-            const id = this.$store.state.toBeExpanded;
-            for (let i = 0; i < this.recordsGroup.list.length; i++) {
-                if (this.recordsGroup.list[i].id === id) {
-                    panel = 0;
-                }
-            }
-            return {
-                panel: panel
-            }
-        },
         computed: {
             ...mapGetters([
-                'iconsMapGetter', 'toBeExpandedGetter'
+                'iconsMapGetter'
             ]),
+            panel: {
+                get() {
+                    let panel = -1;
+                    const id = this.$store.state.toBeExpanded;
+                    for (let i = 0; i < this.recordsGroup.list.length; i++) {
+                        if (this.recordsGroup.list[i].id === id) {
+                            console.log('in da comp: ' + this.recordsGroup.list[i].id);
+                            panel = 0;
+                            break;
+                        }
+                    }
+                    return panel;
+                },
+                set() {
+                }
+            },
             recordGroupBalance() {
                 if (this.recordsGroup.list.length === 1) return this.recordsGroup.list[0].sum;
                 let x = 0;
