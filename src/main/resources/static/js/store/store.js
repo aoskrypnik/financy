@@ -23,7 +23,7 @@ export default new Vuex.Store({
         expenseCategories: [],
         incomeCategories: [],
         dateList: [],
-        toBeExpanded: undefined,
+        toBeExpanded: -1,
         iconsMap: {
             'FoodExpense': 'restaurant_menu',
             'CafeExpense': 'local_cafe',
@@ -96,9 +96,6 @@ export default new Vuex.Store({
         },
         dateListGetter: state => {
             return state.dateList;
-        },
-        toBeExpandedGetter: state => {
-            return state.toBeExpanded;
         }
     },
     mutations: {

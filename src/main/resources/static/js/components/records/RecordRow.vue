@@ -1,5 +1,5 @@
 <template>
-    <v-expansion-panels class="mb-2">
+    <v-expansion-panels v-model="panel" class="mb-2">
         <v-expansion-panel>
             <v-expansion-panel-header>
                 <v-col class="pa-0" cols="8">
@@ -30,6 +30,18 @@
 
     export default {
         props: ['recordsGroup'],
+        data() {
+            let panel = -1;
+            const id = this.$store.state.toBeExpanded;
+            for (let i = 0; i < this.recordsGroup.list.length; i++) {
+                if (this.recordsGroup.list[i].id === id) {
+                    panel = 0;
+                }
+            }
+            return {
+                panel: panel
+            }
+        },
         computed: {
             ...mapGetters([
                 'iconsMapGetter', 'toBeExpandedGetter'
