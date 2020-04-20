@@ -1,7 +1,6 @@
 package com.skrypnik.financy.controller
 
 import com.skrypnik.financy.domain.User
-import com.skrypnik.financy.domain.enums.ExpenseCategoryEnum
 import com.skrypnik.financy.service.RecordService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.annotation.AuthenticationPrincipal
