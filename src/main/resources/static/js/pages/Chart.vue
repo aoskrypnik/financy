@@ -6,13 +6,17 @@
                 type="PieChart"
                 :data="chartDataIncomes"
                 :options="chartOptions"
+                v-if="chartDataIncomes.length > 1"
         />
+        <img v-else class="data-not-found" src="/assets/no_data.png">
         <v-layout justify-center>Expenses chart</v-layout>
         <GChart
                 type="PieChart"
                 :data="chartDataExpenses"
                 :options="chartOptions"
+                v-if="chartDataExpenses.length > 1"
         />
+        <img v-else class="data-not-found" src="/assets/no_data.png">
     </v-container>
 </template>
 
@@ -68,5 +72,12 @@
 </script>
 
 <style scoped>
-
+    .data-not-found {
+        width: 150px;
+        height: 150px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 15px;
+    }
 </style>
