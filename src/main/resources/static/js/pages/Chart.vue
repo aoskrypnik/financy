@@ -1,5 +1,6 @@
 <template>
     <v-container>
+        <record-date></record-date>
         <v-layout justify-center>Incomes chart</v-layout>
         <GChart
                 type="PieChart"
@@ -16,37 +17,42 @@
 </template>
 
 <script>
+    import RecordDate from "components/records/RecordDate.vue";
     import {GChart} from 'vue-google-charts'
     import {mapGetters} from "vuex";
 
     export default {
         components: {
-            GChart
+            GChart,
+            RecordDate
         },
         computed: {
-            ...mapGetters(['sortedRecords'])
+            ...mapGetters(['sortedRecords']),
+            chartDataIncomes() {
+                const incomes = this.$store.getters.sortedRecords.filter(e => e.type === 'Income');
+                let incomesChart = [['Category', 'Sum']]
+                for (let i = 0; i < incomes.length; i++) {
+                    incomesChart[i + 1] = [incomes[i].category,
+                        incomes[i].list
+                            .map(a => a.sum)
+                            .reduce((a, b) => a + b, 0)]
+                }
+                return incomesChart;
+            },
+            chartDataExpenses() {
+                const expenses = this.$store.getters.sortedRecords.filter(e => e.type === 'Expense');
+                let expensesChart = [['Category', 'Sum']]
+                for (let i = 0; i < expenses.length; i++) {
+                    expensesChart[i + 1] = [expenses[i].category,
+                        expenses[i].list
+                            .map(a => a.sum)
+                            .reduce((a, b) => a + b, 0)]
+                }
+                return expensesChart;
+            }
         },
         data() {
-            const incomes = this.$store.getters.sortedRecords.filter(e => e.type === 'Income');
-            const expenses = this.$store.getters.sortedRecords.filter(e => e.type === 'Expense');
-
-            let incomesChart = [['Category', 'Sum']]
-            for (let i = 0; i < incomes.length; i++) {
-                incomesChart[i + 1] = [incomes[i].category,
-                    incomes[i].list
-                        .map(a => a.sum)
-                        .reduce((a, b) => a + b, 0)]
-            }
-            let expensesChart = [['Category', 'Sum']]
-            for (let i = 0; i < expenses.length; i++) {
-                expensesChart[i + 1] = [expenses[i].category,
-                    expenses[i].list
-                        .map(a => a.sum)
-                        .reduce((a, b) => a + b, 0)]
-            }
             return {
-                chartDataIncomes: incomesChart,
-                chartDataExpenses: expensesChart,
                 chartOptions: {
                     chart: {
                         title: 'Company Performance',
@@ -54,7 +60,10 @@
                     }
                 }
             }
-        }
+        },
+        created() {
+            this.$store.dispatch('createDatesListAction', new Date());
+        },
     }
 </script>
 
