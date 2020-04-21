@@ -7,6 +7,9 @@
             </v-col>
             <v-col>
                 <v-layout class="float-right">
+                    <v-btn icon @click="edit" small>
+                        <v-icon>edit</v-icon>
+                    </v-btn>
                     <v-btn icon @click="del" small>
                         <v-icon>delete</v-icon>
                     </v-btn>
@@ -26,18 +29,24 @@
 </template>
 
 <script>
-    import {mapActions} from 'vuex'
+    import {mapActions, mapMutations, mapState} from 'vuex'
 
     export default {
         props: ['record', 'type', 'color'],
         methods: {
             ...mapActions(['removeExpenseAction', 'removeIncomeAction']),
+            ...mapMutations(['changeEditableRecordMutation']),
+            ...mapState(['editableRecord']),
             del() {
                 if (this.type === 'Income') {
                     this.removeIncomeAction(this.record)
                 } else if (this.type === 'Expense') {
                     this.removeExpenseAction(this.record)
                 }
+            },
+            edit() {
+                this.record['type'] = this.type;
+                this.changeEditableRecordMutation(this.record);
             },
             reformatDate(creationDate) {
                 let date = new Date(creationDate);

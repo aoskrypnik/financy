@@ -40,7 +40,7 @@ class IncomeController {
     @PutMapping("{id}")
     fun updateIncome(@PathVariable("id") incomeFromDb: Income,
                      @RequestBody income: Income): Income {
-        copyProperties(income, incomeFromDb, "id")
+        copyProperties(income, incomeFromDb, "id", "user")
         return incomeRepo.save(incomeFromDb)
     }
 

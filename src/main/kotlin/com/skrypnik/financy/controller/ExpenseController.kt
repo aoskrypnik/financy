@@ -29,7 +29,7 @@ class ExpenseController {
     fun getAll(): List<Expense> = expenseRepo.findAll()
 
     @GetMapping("{id}")
-    fun getExpenseById(@PathVariable("id") income: Expense) = income
+    fun getExpenseById(@PathVariable("id") expense: Expense) = expense
 
     @PostMapping
     fun createExpense(@RequestBody expense: Expense): Expense {
@@ -40,7 +40,7 @@ class ExpenseController {
     @PutMapping("{id}")
     fun updateExpense(@PathVariable("id") expenseFromDb: Expense,
                       @RequestBody expense: Expense): Expense {
-        copyProperties(expense, expenseFromDb, "id")
+        copyProperties(expense, expenseFromDb, "id", "user")
         return expenseRepo.save(expenseFromDb)
     }
 

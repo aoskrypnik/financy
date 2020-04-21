@@ -98,6 +98,7 @@
         },
         data() {
             return {
+                id: null,
                 expenseSum: '',
                 expenseCategory: '',
                 expenseComment: '',
@@ -118,21 +119,49 @@
                 'incomeCategoriesGetter',
                 'expenseCategoriesGetter',
             ]),
+            editableRec() {
+                return this.$store.state.editableRecord;
+            }
+        },
+        watch: {
+            editableRec(newVal, oldVal) {
+                if (newVal['type'] === 'Expense') {
+                    this.id = newVal['id']
+                    this.expenseCategory = newVal['category']
+                    this.expenseSum = newVal['sum']
+                    this.creationDate = newVal['creationDate']
+                    this.expenseComment = newVal['comment']
+                    this.expenseSheet = !this.expenseSheet
+                } else if (newVal['type'] === 'Income') {
+                    this.id = newVal['id']
+                    this.incomeCategory = newVal['category']
+                    this.incomeSum = newVal['sum']
+                    this.creationDate = newVal['creationDate']
+                    this.incomeComment = newVal['comment']
+                    this.incomeSheet = !this.incomeSheet
+                }
+            }
         },
         methods: {
             ...mapActions([
                 'addIncomeAction',
                 'addExpenseAction',
                 'recalculateBalanceAction',
+                'editIncomeAction',
+                'editExpenseAction'
             ]),
             saveIncome() {
                 const record = {
+                    id: this.id,
                     sum: this.incomeSum,
                     category: this.incomeCategory,
                     comment: this.incomeComment,
                     creationDate: this.creationDate
                 };
-                this.addIncomeAction(record);
+                if (this.id === null)
+                    this.addIncomeAction(record)
+                else
+                    this.editIncomeAction(record)
                 this.incomeSum = '';
                 this.incomeCategory = '';
                 this.incomeComment = '';
@@ -140,18 +169,23 @@
             },
             saveExpense() {
                 const record = {
+                    id: this.id,
                     sum: this.expenseSum,
                     category: this.expenseCategory,
                     comment: this.expenseComment,
                     creationDate: this.creationDate
                 };
-                this.addExpenseAction(record);
+                if (this.id === null)
+                    this.addExpenseAction(record)
+                else
+                    this.editExpenseAction(record)
                 this.expenseSum = '';
                 this.expenseCategory = '';
                 this.expenseComment = '';
                 this.close(true);
             },
             close(isExpense) {
+                this.id = null;
                 isExpense
                     ? this.expenseSheet = !this.expenseSheet
                     : this.incomeSheet = !this.incomeSheet;

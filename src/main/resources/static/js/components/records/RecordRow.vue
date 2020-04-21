@@ -40,7 +40,6 @@
                     const id = this.$store.state.toBeExpanded;
                     for (let i = 0; i < this.recordsGroup.list.length; i++) {
                         if (this.recordsGroup.list[i].id === id) {
-                            console.log('in da comp: ' + this.recordsGroup.list[i].id);
                             panel = 0;
                             break;
                         }

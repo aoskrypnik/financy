@@ -14,6 +14,53 @@ function sortRecords() {
     };
 }
 
+function removeRecord(state, record, isIncome) {
+    let delInd;
+    let category;
+
+    if (isIncome) {
+        for (let key in state.incomes) {
+            let foundIndex = state.incomes[key].findIndex(item => item.id === record.id)
+            if (foundIndex > -1) {
+                delInd = foundIndex
+                category = key
+                break
+            }
+        }
+    } else {
+        for (let key in state.expenses) {
+            let foundIndex = state.expenses[key].findIndex(item => item.id === record.id)
+            if (foundIndex > -1) {
+                delInd = foundIndex
+                category = key
+                break
+            }
+        }
+    }
+
+    let copy;
+    if (isIncome)
+        copy = state.incomes[category];
+    else
+        copy = state.expenses[category];
+
+    if (delInd > -1) {
+        copy = [
+            ...copy.slice(0, delInd),
+            ...copy.slice(delInd + 1)
+        ]
+    }
+    if (isIncome) {
+        copy.length === 0
+            ? Vue.set(state.incomes, category, undefined)
+            : state.incomes[category] = copy;
+    } else {
+        copy.length === 0
+            ? Vue.set(state.expenses, category, undefined)
+            : state.expenses[category] = copy;
+    }
+}
+
 export default new Vuex.Store({
     state: {
         incomes: frontendData.incomes,
@@ -24,6 +71,7 @@ export default new Vuex.Store({
         incomeCategories: [],
         dateList: [],
         toBeExpanded: -1,
+        editableRecord: null,
         iconsMap: {
             'FoodExpense': 'restaurant_menu',
             'CafeExpense': 'local_cafe',
@@ -49,6 +97,9 @@ export default new Vuex.Store({
         }
     },
     getters: {
+        editableRecordGetter: state => {
+            return state.editableRecord;
+        },
         iconsMapGetter: state => {
             return state.iconsMap
         },
@@ -105,10 +156,12 @@ export default new Vuex.Store({
         }
     },
     mutations: {
+        changeEditableRecordMutation(state, record) {
+            state.editableRecord = record
+        },
         addIncomeMutation(state, income) {
             const givenCategory = income.category;
             state.toBeExpanded = income.id;
-            console.log(state.toBeExpanded);
             for (let key in state.incomes) {
                 if (givenCategory === key && state.incomes.hasOwnProperty(key)) {
                     state.incomes[key].push(income);
@@ -120,7 +173,6 @@ export default new Vuex.Store({
         addExpenseMutation(state, expense) {
             const givenCategory = expense.category;
             state.toBeExpanded = expense.id;
-            console.log(state.toBeExpanded);
             for (let key in state.expenses) {
                 if (expense.category === key && state.expenses.hasOwnProperty(key)) {
                     state.expenses[key].push(expense);
@@ -129,31 +181,41 @@ export default new Vuex.Store({
             }
             Vue.set(state.expenses, givenCategory, [expense]);
         },
-        removeIncomeMutation(state, income) {
-            let copy = state.incomes[income.category];
-            const deletionIndex = copy.findIndex(item => item.id === income.id);
-            if (deletionIndex > -1) {
-                copy = [
-                    ...copy.slice(0, deletionIndex),
-                    ...copy.slice(deletionIndex + 1)
-                ]
+        editExpenseMutation(state, expense) {
+            removeRecord(state, expense, false)
+            const givenCategory = expense.category;
+            state.toBeExpanded = expense.id;
+            for (let key in state.expenses) {
+                if (expense.category === key && state.expenses.hasOwnProperty(key)) {
+                    if (state.expenses[key] === undefined)
+                        state.expenses[key] = [expense]
+                    else
+                        state.expenses[key].push(expense);
+                    return
+                }
             }
-            copy.length === 0
-                ? Vue.set(state.incomes, income.category, undefined)
-                : state.incomes[income.category] = copy;
+            Vue.set(state.expenses, givenCategory, [expense]);
+        },
+        editIncomeMutation(state, income) {
+            removeRecord(state, income, true)
+            const givenCategory = income.category;
+            state.toBeExpanded = income.id;
+            for (let key in state.incomes) {
+                if (income.category === key && state.incomes.hasOwnProperty(key)) {
+                    if (state.incomes[key] === undefined)
+                        state.incomes[key] = [income]
+                    else
+                        state.incomes[key].push(income);
+                    return
+                }
+            }
+            Vue.set(state.incomes, givenCategory, [income]);
+        },
+        removeIncomeMutation(state, income) {
+            removeRecord(state, income, true)
         },
         removeExpenseMutation(state, expense) {
-            let copy = state.expenses[expense.category];
-            const deletionIndex = copy.findIndex(item => item.id === expense.id);
-            if (deletionIndex > -1) {
-                copy = [
-                    ...copy.slice(0, deletionIndex),
-                    ...copy.slice(deletionIndex + 1)
-                ]
-            }
-            copy.length === 0
-                ? Vue.set(state.expenses, expense.category, undefined)
-                : state.expenses[expense.category] = copy;
+            removeRecord(state, expense, false)
         },
         recalculateBalanceMutation(state, newBalance) {
             state.balance = parseInt(newBalance);
@@ -209,6 +271,19 @@ export default new Vuex.Store({
             commit('addIncomeMutation', data);
             dispatch('recalculateBalanceAction', creationDate)
         },
+        async editIncomeAction({state, commit, dispatch}, record) {
+            const result = await Vue.resource('/income{/id}').update({id: record['id']}, record);
+            const data = await result.json();
+            const currentDate = state.dateList.find(e => e.isCurrent === true).dateFormat;
+            const creationDate = data.creationDate;
+            if (creationDate.split('-')[0] !== currentDate.split('-')[0] ||
+                creationDate.split('-')[1] !== currentDate.split('-')[1]) {
+                dispatch('createDatesListAction', creationDate);
+                dispatch('justGetNewRecordsAction', creationDate);
+            }
+            commit('editIncomeMutation', data);
+            dispatch('recalculateBalanceAction', creationDate)
+        },
         async addExpenseAction({state, commit, dispatch}, record) {
             const result = await Vue.resource('/expense{/id}').save({}, record);
             const data = await result.json();
@@ -220,6 +295,19 @@ export default new Vuex.Store({
                 dispatch('justGetNewRecordsAction', creationDate);
             }
             commit('addExpenseMutation', data);
+            dispatch('recalculateBalanceAction', creationDate)
+        },
+        async editExpenseAction({state, commit, dispatch}, record) {
+            const result = await Vue.resource('/expense{/id}').update({id: record['id']}, record);
+            const data = await result.json();
+            const currentDate = state.dateList.find(e => e.isCurrent === true).dateFormat;
+            const creationDate = data.creationDate;
+            if (creationDate.split('-')[0] !== currentDate.split('-')[0] ||
+                creationDate.split('-')[1] !== currentDate.split('-')[1]) {
+                dispatch('createDatesListAction', creationDate);
+                dispatch('justGetNewRecordsAction', creationDate);
+            }
+            commit('editExpenseMutation', data);
             dispatch('recalculateBalanceAction', creationDate)
         },
         async removeIncomeAction({commit, dispatch}, income) {
