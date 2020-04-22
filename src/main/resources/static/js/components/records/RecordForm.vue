@@ -11,9 +11,19 @@
                 <v-sheet class="text-center">
                     <v-col cols="12">
                         <v-layout column mt="2">
-                            <v-text-field label="Sum" placeholder="Write sum" v-model="expenseSum"/>
-                            <v-select v-model="expenseCategory" :items="expenseCategoriesGetter"
-                                      label="Choose category"></v-select>
+                            <v-text-field label="Sum"
+                                          placeholder="Write sum"
+                                          v-model="expenseSum"
+                                          :error-messages="expenseSumErrors"
+                                          required
+                                          @input="$v.expenseSum.$touch()"
+                                          @blur="$v.expenseSum.$touch()"/>
+                            <v-select v-model="expenseCategory"
+                                      :items="expenseCategoriesGetter"
+                                      label="Choose category"
+                                      :error-messages="expenseCategoryErrors"
+                                      @change="$v.expenseCategory.$touch()"
+                                      @blur="$v.expenseCategory.$touch()"/>
                             <v-text-field label="Comment" placeholder="Write comment" v-model="expenseComment"/>
                             <v-menu
                                     ref="menu1"
@@ -54,9 +64,21 @@
                 <v-sheet class="text-center">
                     <v-col cols="12">
                         <v-layout column mt="2">
-                            <v-text-field label="Sum" placeholder="Write sum" v-model="incomeSum"/>
-                            <v-select v-model="incomeCategory" :items="incomeCategoriesGetter"
-                                      label="Choose category"></v-select>
+                            <v-text-field label="Sum"
+                                          placeholder="Write sum"
+                                          v-model="incomeSum"
+                                          :error-messages="incomeSumErrors"
+                                          required
+                                          @input="$v.incomeSum.$touch()"
+                                          @blur="$v.incomeSum.$touch()"
+                            />
+                            <v-select v-model="incomeCategory"
+                                      :items="incomeCategoriesGetter"
+                                      label="Choose category"
+                                      :error-messages="incomeCategoryErrors"
+                                      @change="$v.incomeCategory.$touch()"
+                                      @blur="$v.incomeCategory.$touch()"
+                            />
                             <v-text-field label="Comment" placeholder="Write comment" v-model="incomeComment"/>
                             <v-menu
                                     ref="menu1"
@@ -89,10 +111,23 @@
 </template>
 
 <script>
-    import RecordDate from "components/records/RecordDate.vue";
+    import RecordDate from "components/records/RecordDate.vue"
     import {mapActions, mapGetters} from 'vuex'
+    import {validationMixin} from 'vuelidate'
+    import {decimal, required} from 'vuelidate/lib/validators'
+
+    const mustBePositive = (value) => value > 0
 
     export default {
+        mixins: [validationMixin],
+
+        validations: {
+            expenseSum: {required, mustBePositive, decimal},
+            incomeSum: {required, mustBePositive, decimal},
+            expenseCategory: {required},
+            incomeCategory: {required},
+        },
+
         components: {
             RecordDate
         },
@@ -121,7 +156,35 @@
             ]),
             editableRec() {
                 return this.$store.state.editableRecord;
-            }
+            },
+            expenseSumErrors() {
+                const errors = []
+                if (this.$v.expenseSum === undefined || !this.$v.expenseSum.$dirty) return errors
+                !this.$v.expenseSum.decimal && errors.push('Must be valid number')
+                !this.$v.expenseSum.required && errors.push('Sum is required')
+                !this.$v.expenseSum.mustBePositive && errors.push('Sum must be positive')
+                return errors
+            },
+            expenseCategoryErrors() {
+                const errors = []
+                if (this.$v.expenseCategory === undefined || !this.$v.expenseCategory.$dirty) return errors
+                !this.$v.expenseCategory.required && errors.push('Category is required')
+                return errors
+            },
+            incomeSumErrors() {
+                const errors = []
+                if (this.$v.incomeSum === undefined || !this.$v.incomeSum.$dirty) return errors
+                !this.$v.incomeSum.decimal && errors.push('Must be valid number')
+                !this.$v.incomeSum.required && errors.push('Sum is required')
+                !this.$v.incomeSum.mustBePositive && errors.push('Sum must be positive')
+                return errors
+            },
+            incomeCategoryErrors() {
+                const errors = []
+                if (this.$v.incomeCategory === undefined || !this.$v.incomeCategory.$dirty) return errors
+                !this.$v.incomeCategory.required && errors.push('Category is required')
+                return errors
+            },
         },
         watch: {
             editableRec(newVal, oldVal) {
@@ -151,6 +214,8 @@
                 'editExpenseAction'
             ]),
             saveIncome() {
+                this.$v.$touch()
+                if (this.$v.incomeSum.$error === true || this.$v.incomeCategory.$error === true) return
                 const record = {
                     id: this.id,
                     sum: this.incomeSum,
@@ -168,6 +233,8 @@
                 this.close(false);
             },
             saveExpense() {
+                this.$v.$touch()
+                if (this.$v.expenseSum.$error === true || this.$v.expenseCategory.$error === true) return
                 const record = {
                     id: this.id,
                     sum: this.expenseSum,
@@ -185,6 +252,7 @@
                 this.close(true);
             },
             close(isExpense) {
+                this.$v.$reset()
                 this.id = null;
                 isExpense
                     ? this.expenseSheet = !this.expenseSheet

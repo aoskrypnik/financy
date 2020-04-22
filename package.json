@@ -12,6 +12,7 @@
     "vue-google-charts": "^0.3.2",
     "vue-resource": "^1.5.1",
     "vue-router": "^3.1.6",
+    "vuelidate": "^0.7.5",
     "vuetify": "^2.2.17",
     "vuex": "^3.1.3"
   },
