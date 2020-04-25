@@ -8,7 +8,9 @@
                 :options="chartOptions"
                 v-if="chartDataIncomes.length > 1"
         />
-        <img v-else class="data-not-found" src="/assets/no_data.png">
+        <v-row v-else justify="space-around">
+            <v-btn disabled>No data found</v-btn>
+        </v-row>
         <v-layout justify-center>Expenses chart</v-layout>
         <GChart
                 type="PieChart"
@@ -16,7 +18,9 @@
                 :options="chartOptions"
                 v-if="chartDataExpenses.length > 1"
         />
-        <img v-else class="data-not-found" src="/assets/no_data.png">
+        <v-row v-else justify="space-around">
+            <v-btn disabled>No data found</v-btn>
+        </v-row>
     </v-container>
 </template>
 
