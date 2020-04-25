@@ -8,7 +8,7 @@
                 :options="chartOptions"
                 v-if="chartDataIncomes.length > 1"
         />
-        <img v-else class="data-not-found" src="/js/assets/no_data.png">
+        <img v-else class="data-not-found" src="/assets/no_data.png">
         <v-layout justify-center>Expenses chart</v-layout>
         <GChart
                 type="PieChart"
@@ -16,7 +16,7 @@
                 :options="chartOptions"
                 v-if="chartDataExpenses.length > 1"
         />
-        <img v-else class="data-not-found" src="/js/assets/no_data.png">
+        <img v-else class="data-not-found" src="/assets/no_data.png">
     </v-container>
 </template>
 
