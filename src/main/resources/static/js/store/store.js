@@ -20,20 +20,24 @@ function removeRecord(state, record, isIncome) {
 
     if (isIncome) {
         for (let key in state.incomes) {
-            let foundIndex = state.incomes[key].findIndex(item => item.id === record.id)
-            if (foundIndex > -1) {
-                delInd = foundIndex
-                category = key
-                break
+            if (state.incomes[key] !== undefined) {
+                let foundIndex = state.incomes[key].findIndex(item => item.id === record.id)
+                if (foundIndex > -1) {
+                    delInd = foundIndex
+                    category = key
+                    break
+                }
             }
         }
     } else {
         for (let key in state.expenses) {
-            let foundIndex = state.expenses[key].findIndex(item => item.id === record.id)
-            if (foundIndex > -1) {
-                delInd = foundIndex
-                category = key
-                break
+            if (state.expenses[key] !== undefined) {
+                let foundIndex = state.expenses[key].findIndex(item => item.id === record.id)
+                if (foundIndex > -1) {
+                    delInd = foundIndex
+                    category = key
+                    break
+                }
             }
         }
     }
@@ -164,6 +168,8 @@ export default new Vuex.Store({
             state.toBeExpanded = income.id;
             for (let key in state.incomes) {
                 if (givenCategory === key && state.incomes.hasOwnProperty(key)) {
+                    if (state.incomes[key] === undefined)
+                        state.incomes[key] = []
                     state.incomes[key].push(income);
                     return
                 }
@@ -175,6 +181,8 @@ export default new Vuex.Store({
             state.toBeExpanded = expense.id;
             for (let key in state.expenses) {
                 if (expense.category === key && state.expenses.hasOwnProperty(key)) {
+                    if (state.expenses[key] === undefined)
+                        state.expenses[key] = []
                     state.expenses[key].push(expense);
                     return
                 }
@@ -218,7 +226,7 @@ export default new Vuex.Store({
             removeRecord(state, expense, false)
         },
         recalculateBalanceMutation(state, newBalance) {
-            state.balance = parseInt(newBalance);
+            state.balance = parseFloat(newBalance);
         },
         getExpenseCategoriesMutation(state, expenseCategories) {
             state.expenseCategories = expenseCategories
@@ -294,6 +302,7 @@ export default new Vuex.Store({
                 dispatch('createDatesListAction', creationDate);
                 dispatch('justGetNewRecordsAction', creationDate);
             }
+            console.log(data.sum)
             commit('addExpenseMutation', data);
             dispatch('recalculateBalanceAction', creationDate)
         },

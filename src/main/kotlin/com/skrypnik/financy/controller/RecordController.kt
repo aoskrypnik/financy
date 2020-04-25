@@ -19,7 +19,7 @@ class RecordController {
 
     @GetMapping("/balance/{date}")
     fun getBalanceByMonth(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") date: LocalDate,
-                          @AuthenticationPrincipal user: User): Int =
+                          @AuthenticationPrincipal user: User): Double =
             recordService.countBalanceByUserAndMonth(user, date)
 
     @GetMapping("/{date}")

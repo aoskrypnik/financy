@@ -9,6 +9,7 @@ import com.skrypnik.financy.repo.ExpenseRepo
 import com.skrypnik.financy.repo.IncomeRepo
 import com.skrypnik.financy.service.RecordService
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.time.LocalDate
 import javax.annotation.Resource
 
@@ -45,16 +46,16 @@ class RecordServiceImpl : RecordService {
         return incomeRepo.findByUserAndCreationDateBetween(user, from, to).groupBy { it.category }
     }
 
-    override fun countBalanceByUserAndMonth(user: User, date: LocalDate): Int {
+    override fun countBalanceByUserAndMonth(user: User, date: LocalDate): Double {
         val from = LocalDate.of(date.year, date.month, 1)
         val to = LocalDate.of(date.year, date.month + 1, 1).minusDays(1)
         val incomesSum = incomeRepo.findByUserAndCreationDateBetween(user, from, to)
                 .map { i -> i.sum }
-                .fold(0) { acc, next -> acc + next }
+                .fold(BigDecimal.valueOf(0)) { acc, next -> acc.add(next) }
         val expensesSum = expenseRepo.findByUserAndCreationDateBetween(user, from, to)
                 .map { e -> e.sum }
-                .fold(0) { acc, next -> acc + next }
-        return incomesSum - expensesSum
+                .fold(BigDecimal.valueOf(0)) { acc, next -> acc.add(next) }
+        return incomesSum.subtract(expensesSum).toDouble()
     }
 
     private fun chooseDate(firstDate: LocalDate?, secondDate: LocalDate?,

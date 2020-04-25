@@ -2,6 +2,7 @@ package com.skrypnik.financy.domain
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.skrypnik.financy.domain.enums.IncomeCategoryEnum
+import java.math.BigDecimal
 import java.time.LocalDate
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -14,6 +15,7 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.Table
+import javax.validation.constraints.Digits
 
 @Entity
 @Table
@@ -27,8 +29,9 @@ data class Income(
         @Column(nullable = false)
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         var creationDate: LocalDate,
+        @Digits(integer = 10, fraction = 2)
         @Column(nullable = false)
-        var sum: Int,
+        var sum: BigDecimal,
         @Column(nullable = true)
         var comment: String?,
         @Column(nullable = false)

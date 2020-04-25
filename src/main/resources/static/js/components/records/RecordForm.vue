@@ -45,7 +45,7 @@
                                 </template>
                                 <v-date-picker v-model="creationDate" no-title @input="menu1 = false"></v-date-picker>
                             </v-menu>
-                            <v-btn class="mt-6" text color="error" @click="saveExpense">Save</v-btn>
+                            <v-btn class="mt-6" text color="red" @click="saveExpense">Save Expense</v-btn>
                             <v-btn class="mt-6" text color="primary" @click="close(true)">Close</v-btn>
                         </v-layout>
                     </v-col>
@@ -100,7 +100,7 @@
                                 </template>
                                 <v-date-picker v-model="creationDate" no-title @input="menu2 = false"></v-date-picker>
                             </v-menu>
-                            <v-btn class="mt-6" text color="error" @click="saveIncome">Save</v-btn>
+                            <v-btn class="mt-6" text color="green" @click="saveIncome">Save income</v-btn>
                             <v-btn class="mt-6" text color="primary" @click="close(false)">Close</v-btn>
                         </v-layout>
                     </v-col>

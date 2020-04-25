@@ -36,9 +36,15 @@
         methods: {
             showList() {
                 this.$router.push('/')
+                const date = new Date().toISOString().split('T')[0];
+                this.$store.dispatch('justGetNewRecordsAction', date);
+                this.$store.dispatch('recalculateBalanceAction', date);
             },
             showChart() {
                 this.$router.push('/chart')
+                const date = new Date().toISOString().split('T')[0];
+                this.$store.dispatch('justGetNewRecordsAction', date);
+                this.$store.dispatch('recalculateBalanceAction', date);
             }
         },
         beforeMount() {

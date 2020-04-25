@@ -16,5 +16,5 @@ interface RecordService {
 
     fun getIncomesByUserAndDate(user: User, date: LocalDate): Map<IncomeCategoryEnum, List<Income>>
 
-    fun countBalanceByUserAndMonth(user: User, date: LocalDate): Int
+    fun countBalanceByUserAndMonth(user: User, date: LocalDate): Double
 }
