@@ -40,8 +40,8 @@
                     const id = this.$store.state.toBeExpanded;
                     for (let i = 0; i < this.recordsGroup.list.length; i++) {
                         if (this.recordsGroup.list[i].id === id) {
-                            panel = 0;
-                            break;
+                            panel = 0
+                            break
                         }
                     }
                     return panel;
