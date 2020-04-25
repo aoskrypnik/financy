@@ -5,8 +5,10 @@
 </template>
 
 <script>
+    import {mapState} from "vuex";
+
     export default {
-        name: "Auth"
+        computed: mapState(['profile']),
     }
 </script>
 

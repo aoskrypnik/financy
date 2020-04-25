@@ -24,7 +24,7 @@ class MainController {
     @GetMapping
     fun getMainPage(model: Model, @AuthenticationPrincipal user: User?): String {
         val data = mutableMapOf<Any, Any?>()
-        val currentDate = LocalDate.now();
+        val currentDate = LocalDate.now()
         user?.let {
             data["profile"] = it
             data["incomes"] = recordService.getIncomesByUserAndDate(it, currentDate)
