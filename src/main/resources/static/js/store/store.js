@@ -1,5 +1,9 @@
 import Vue from 'vue';
 import VueResource from 'vue-resource'
+import expensesApi from "api/expenses";
+import incomesApi from "api/incomes";
+import recordsApi from "api/records";
+import categoriesApi from "api/categories";
 import Vuex from 'vuex';
 
 Vue.use(VueResource);
@@ -44,9 +48,9 @@ function removeRecord(state, record, isIncome) {
 
     let copy;
     if (isIncome)
-        copy = state.incomes[category];
+        copy = state.incomes[category]
     else
-        copy = state.expenses[category];
+        copy = state.expenses[category]
 
     if (delInd > -1) {
         copy = [
@@ -57,11 +61,11 @@ function removeRecord(state, record, isIncome) {
     if (isIncome) {
         copy.length === 0
             ? Vue.set(state.incomes, category, undefined)
-            : state.incomes[category] = copy;
+            : state.incomes[category] = copy
     } else {
         copy.length === 0
             ? Vue.set(state.expenses, category, undefined)
-            : state.expenses[category] = copy;
+            : state.expenses[category] = copy
     }
 }
 
@@ -102,14 +106,14 @@ export default new Vuex.Store({
     },
     getters: {
         editableRecordGetter: state => {
-            return state.editableRecord;
+            return state.editableRecord
         },
         iconsMapGetter: state => {
             return state.iconsMap
         },
         sortedRecords: state => {
-            let records = [];
-            let incomes = state.incomes ? state.incomes : {};
+            let records = []
+            let incomes = state.incomes ? state.incomes : {}
             for (let key in incomes) {
                 if (incomes[key] !== undefined) {
                     let record = {
@@ -120,7 +124,7 @@ export default new Vuex.Store({
                     records.push(record);
                 }
             }
-            let expenses = state.expenses ? state.expenses : {};
+            let expenses = state.expenses ? state.expenses : {}
             for (let key in expenses) {
                 if (expenses[key] !== undefined) {
                     let record = {
@@ -128,12 +132,12 @@ export default new Vuex.Store({
                         'list': expenses[key].sort(sortRecords()),
                         'type': 'Expense'
                     };
-                    records.push(record);
+                    records.push(record)
                 }
             }
             records.sort((a, b) => {
-                let aa = new Date(a.list[0].creationDate);
-                let bb = new Date(b.list[0].creationDate);
+                let aa = new Date(a.list[0].creationDate)
+                let bb = new Date(b.list[0].creationDate)
                 if (aa - bb === 0) {
                     return -(a.list[0].id - b.list[0].id)
                 }
@@ -145,18 +149,18 @@ export default new Vuex.Store({
             return state.balance
         },
         balanceColorGetter: state => {
-            if (state.balance < 0) return 'red';
-            else if (state.balance > 0) return 'green';
+            if (state.balance < 0) return 'red'
+            else if (state.balance > 0) return 'green'
             else return 'grey'
         },
         incomeCategoriesGetter: state => {
-            return state.incomeCategories;
+            return state.incomeCategories
         },
         expenseCategoriesGetter: state => {
-            return state.expenseCategories;
+            return state.expenseCategories
         },
         dateListGetter: state => {
-            return state.dateList;
+            return state.dateList
         }
     },
     mutations: {
@@ -164,26 +168,26 @@ export default new Vuex.Store({
             state.editableRecord = record
         },
         addIncomeMutation(state, income) {
-            const givenCategory = income.category;
-            state.toBeExpanded = income.id;
+            const givenCategory = income.category
+            state.toBeExpanded = income.id
             for (let key in state.incomes) {
                 if (givenCategory === key && state.incomes.hasOwnProperty(key)) {
                     if (state.incomes[key] === undefined)
                         state.incomes[key] = []
-                    state.incomes[key].push(income);
+                    state.incomes[key].push(income)
                     return
                 }
             }
-            Vue.set(state.incomes, givenCategory, [income]);
+            Vue.set(state.incomes, givenCategory, [income])
         },
         addExpenseMutation(state, expense) {
-            const givenCategory = expense.category;
-            state.toBeExpanded = expense.id;
+            const givenCategory = expense.category
+            state.toBeExpanded = expense.id
             for (let key in state.expenses) {
                 if (expense.category === key && state.expenses.hasOwnProperty(key)) {
                     if (state.expenses[key] === undefined)
                         state.expenses[key] = []
-                    state.expenses[key].push(expense);
+                    state.expenses[key].push(expense)
                     return
                 }
             }
@@ -191,33 +195,33 @@ export default new Vuex.Store({
         },
         editExpenseMutation(state, expense) {
             removeRecord(state, expense, false)
-            const givenCategory = expense.category;
-            state.toBeExpanded = expense.id;
+            const givenCategory = expense.category
+            state.toBeExpanded = expense.id
             for (let key in state.expenses) {
                 if (expense.category === key && state.expenses.hasOwnProperty(key)) {
                     if (state.expenses[key] === undefined)
                         state.expenses[key] = [expense]
                     else
-                        state.expenses[key].push(expense);
+                        state.expenses[key].push(expense)
                     return
                 }
             }
-            Vue.set(state.expenses, givenCategory, [expense]);
+            Vue.set(state.expenses, givenCategory, [expense])
         },
         editIncomeMutation(state, income) {
             removeRecord(state, income, true)
-            const givenCategory = income.category;
-            state.toBeExpanded = income.id;
+            const givenCategory = income.category
+            state.toBeExpanded = income.id
             for (let key in state.incomes) {
                 if (income.category === key && state.incomes.hasOwnProperty(key)) {
                     if (state.incomes[key] === undefined)
                         state.incomes[key] = [income]
                     else
-                        state.incomes[key].push(income);
+                        state.incomes[key].push(income)
                     return
                 }
             }
-            Vue.set(state.incomes, givenCategory, [income]);
+            Vue.set(state.incomes, givenCategory, [income])
         },
         removeIncomeMutation(state, income) {
             removeRecord(state, income, true)
@@ -226,7 +230,7 @@ export default new Vuex.Store({
             removeRecord(state, expense, false)
         },
         recalculateBalanceMutation(state, newBalance) {
-            state.balance = parseFloat(newBalance);
+            state.balance = parseFloat(newBalance)
         },
         getExpenseCategoriesMutation(state, expenseCategories) {
             state.expenseCategories = expenseCategories
@@ -235,16 +239,16 @@ export default new Vuex.Store({
             state.incomeCategories = incomeCategories
         },
         createDatesListMutation(state, payload) {
-            const curDate = new Date(payload.curDate);
-            let first = new Date(payload.data.first);
-            first.setDate(2);
-            let last = new Date(payload.data.last);
-            last.setDate(2);
-            state.dateList = [];
+            const curDate = new Date(payload.curDate)
+            let first = new Date(payload.data.first)
+            first.setDate(2)
+            let last = new Date(payload.data.last)
+            last.setDate(2)
+            state.dateList = []
             while (first <= last) {
-                const ye = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(first);
-                const mo = new Intl.DateTimeFormat('en', {month: 'short'}).format(first);
-                const cur = curDate.getFullYear() === first.getFullYear() && curDate.getMonth() === first.getMonth();
+                const ye = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(first)
+                const mo = new Intl.DateTimeFormat('en', {month: 'short'}).format(first)
+                const cur = curDate.getFullYear() === first.getFullYear() && curDate.getMonth() === first.getMonth()
                 state.dateList.push({
                     dateString: mo + ' ' + ye,
                     dateFormat: first.toISOString().split('T')[0],
@@ -254,11 +258,11 @@ export default new Vuex.Store({
             }
         },
         getNewRecordsMutation(state, payload) {
-            state.incomes = payload.data.incomes;
-            state.expenses = payload.data.expenses;
+            state.incomes = payload.data.incomes
+            state.expenses = payload.data.expenses
             if (payload.moveLeft !== undefined) {
-                const curIndex = state.dateList.findIndex(e => e.isCurrent === true);
-                state.dateList[curIndex].isCurrent = false;
+                const curIndex = state.dateList.findIndex(e => e.isCurrent === true)
+                state.dateList[curIndex].isCurrent = false
                 payload.moveLeft
                     ? state.dateList[curIndex - 1].isCurrent = true
                     : state.dateList[curIndex + 1].isCurrent = true
@@ -267,95 +271,94 @@ export default new Vuex.Store({
     },
     actions: {
         async addIncomeAction({state, commit, dispatch}, record) {
-            const result = await Vue.resource('/income{/id}').save({}, record);
-            const data = await result.json();
-            const currentDate = state.dateList.find(e => e.isCurrent === true).dateFormat;
-            const creationDate = data.creationDate;
+            const result = await incomesApi.save(record)
+            const data = await result.json()
+            const currentDate = state.dateList.find(e => e.isCurrent === true).dateFormat
+            const creationDate = data.creationDate
             if (creationDate.split('-')[0] !== currentDate.split('-')[0] ||
                 creationDate.split('-')[1] !== currentDate.split('-')[1]) {
-                dispatch('createDatesListAction', creationDate);
-                dispatch('justGetNewRecordsAction', creationDate);
+                dispatch('createDatesListAction', creationDate)
+                dispatch('justGetNewRecordsAction', creationDate)
             }
-            commit('addIncomeMutation', data);
+            commit('addIncomeMutation', data)
             dispatch('recalculateBalanceAction', creationDate)
         },
         async editIncomeAction({state, commit, dispatch}, record) {
-            const result = await Vue.resource('/income{/id}').update({id: record['id']}, record);
-            const data = await result.json();
-            const currentDate = state.dateList.find(e => e.isCurrent === true).dateFormat;
-            const creationDate = data.creationDate;
+            const result = await incomesApi.update(record)
+            const data = await result.json()
+            const currentDate = state.dateList.find(e => e.isCurrent === true).dateFormat
+            const creationDate = data.creationDate
             if (creationDate.split('-')[0] !== currentDate.split('-')[0] ||
                 creationDate.split('-')[1] !== currentDate.split('-')[1]) {
-                dispatch('createDatesListAction', creationDate);
-                dispatch('justGetNewRecordsAction', creationDate);
+                dispatch('createDatesListAction', creationDate)
+                dispatch('justGetNewRecordsAction', creationDate)
             }
-            commit('editIncomeMutation', data);
+            commit('editIncomeMutation', data)
             dispatch('recalculateBalanceAction', creationDate)
         },
         async addExpenseAction({state, commit, dispatch}, record) {
-            const result = await Vue.resource('/expense{/id}').save({}, record);
-            const data = await result.json();
-            const currentDate = state.dateList.find(e => e.isCurrent === true).dateFormat;
-            const creationDate = data.creationDate;
+            const result = await expensesApi.save(record)
+            const data = await result.json()
+            const currentDate = state.dateList.find(e => e.isCurrent === true).dateFormat
+            const creationDate = data.creationDate
             if (creationDate.split('-')[0] !== currentDate.split('-')[0] ||
                 creationDate.split('-')[1] !== currentDate.split('-')[1]) {
-                dispatch('createDatesListAction', creationDate);
-                dispatch('justGetNewRecordsAction', creationDate);
+                dispatch('createDatesListAction', creationDate)
+                dispatch('justGetNewRecordsAction', creationDate)
             }
             console.log(data.sum)
-            commit('addExpenseMutation', data);
+            commit('addExpenseMutation', data)
             dispatch('recalculateBalanceAction', creationDate)
         },
         async editExpenseAction({state, commit, dispatch}, record) {
-            const result = await Vue.resource('/expense{/id}').update({id: record['id']}, record);
-            const data = await result.json();
-            const currentDate = state.dateList.find(e => e.isCurrent === true).dateFormat;
-            const creationDate = data.creationDate;
+            const result = await expensesApi.update(record)
+            const data = await result.json()
+            const currentDate = state.dateList.find(e => e.isCurrent === true).dateFormat
+            const creationDate = data.creationDate
             if (creationDate.split('-')[0] !== currentDate.split('-')[0] ||
                 creationDate.split('-')[1] !== currentDate.split('-')[1]) {
                 dispatch('createDatesListAction', creationDate);
-                dispatch('justGetNewRecordsAction', creationDate);
+                dispatch('justGetNewRecordsAction', creationDate)
             }
             commit('editExpenseMutation', data);
             dispatch('recalculateBalanceAction', creationDate)
         },
         async removeIncomeAction({commit, dispatch}, income) {
-            const result = await Vue.resource('/income{/id}').remove({id: income.id});
+            const result = await incomesApi.remove(income.id)
             if (result.ok) {
-                commit('removeIncomeMutation', income);
+                commit('removeIncomeMutation', income)
                 dispatch('recalculateBalanceAction', income.creationDate)
             }
         },
         async removeExpenseAction({commit, dispatch}, expense) {
-            const result = await Vue.resource('/expense{/id}').remove({id: expense.id});
+            const result = await expensesApi.remove(expense.id)
             if (result.ok) {
-                commit('removeExpenseMutation', expense);
+                commit('removeExpenseMutation', expense)
                 dispatch('recalculateBalanceAction', expense.creationDate)
             }
         },
         async recalculateBalanceAction({commit}, date) {
-            const path = '/record/balance/' + date;
-            const result = await Vue.resource(path).get();
-            const data = await result.json();
+            const result = await recordsApi.getBalance(date)
+            const data = await result.json()
             commit('recalculateBalanceMutation', data)
         },
         async getIncomeCategoriesAction({commit}) {
-            let incomeCategories = [];
-            const result = await Vue.resource('/income/category').get();
-            const data = await result.json();
-            data.forEach(e => incomeCategories.push(e));
+            let incomeCategories = []
+            const result = await categoriesApi.getIncomesCategories()
+            const data = await result.json()
+            data.forEach(e => incomeCategories.push(e))
             commit('getIncomeCategoriesMutation', incomeCategories)
         },
         async getExpenseCategoriesAction({commit}) {
-            let expenseCategories = [];
-            const result = await Vue.resource('/expense/category').get();
-            const data = await result.json();
-            data.forEach(e => expenseCategories.push(e));
+            let expenseCategories = []
+            const result = await categoriesApi.getExpenseCategories()
+            const data = await result.json()
+            data.forEach(e => expenseCategories.push(e))
             commit('getExpenseCategoriesMutation', expenseCategories)
         },
         async createDatesListAction({commit}, date) {
-            const result = await Vue.resource('/record/bounds').get();
-            const data = await result.json();
+            const result = await recordsApi.getBounds()
+            const data = await result.json()
             const payload = {
                 data: data,
                 curDate: date
@@ -363,8 +366,8 @@ export default new Vuex.Store({
             commit('createDatesListMutation', payload)
         },
         async moveDateLeftAction({commit, dispatch}, date) {
-            const result = await Vue.resource('record/' + date.dateFormat).get();
-            const data = await result.json();
+            const result = await recordsApi.getDate(date.dateFormat)
+            const data = await result.json()
             const payload = {
                 data: data,
                 moveLeft: true
@@ -373,22 +376,22 @@ export default new Vuex.Store({
             dispatch('recalculateBalanceAction', date.dateFormat)
         },
         async justGetNewRecordsAction({commit, dispatch}, date) {
-            const result = await Vue.resource('record/' + date).get();
-            const data = await result.json();
+            const result = await recordsApi.getDate(date)
+            const data = await result.json()
             const payload = {
                 data: data,
                 moveLeft: undefined
             };
-            commit('getNewRecordsMutation', payload);
+            commit('getNewRecordsMutation', payload)
         },
         async moveDateRightAction({commit, dispatch}, date) {
-            const result = await Vue.resource('record/' + date.dateFormat).get();
-            const data = await result.json();
+            const result = await recordsApi.getDate(date.dateFormat)
+            const data = await result.json()
             const payload = {
                 data: data,
                 moveLeft: false
             };
-            commit('getNewRecordsMutation', payload);
+            commit('getNewRecordsMutation', payload)
             dispatch('recalculateBalanceAction', date.dateFormat)
         }
     }
