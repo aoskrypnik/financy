@@ -21,7 +21,7 @@
 </template>
 
 <script>
-    import RecordDate from "components/records/RecordDate.vue";
+    import RecordDate from "../components/records/RecordDate.vue";
     import {GChart} from 'vue-google-charts'
     import {mapGetters} from "vuex";
 

@@ -15,7 +15,7 @@ import javax.annotation.Resource
 @RequestMapping("/")
 class MainController {
 
-    @Value("\${spring.profiles.active}")
+    @Value("\${spring.profiles.active:prod}")
     lateinit var profile: String
 
     @Resource

@@ -111,7 +111,7 @@
 </template>
 
 <script>
-    import RecordDate from "components/records/RecordDate.vue"
+    import RecordDate from "../records/RecordDate.vue"
     import {mapActions, mapGetters} from 'vuex'
     import {validationMixin} from 'vuelidate'
     import {decimal, required} from 'vuelidate/lib/validators'

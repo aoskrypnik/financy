@@ -25,7 +25,7 @@
 </template>
 
 <script>
-    import RecordDetail from "components/records/RecordDetail.vue";
+    import RecordDetail from "../records/RecordDetail.vue";
     import {mapGetters} from 'vuex'
 
     export default {

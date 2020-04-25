@@ -5,6 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.3.70"
     id("org.jetbrains.kotlin.plugin.noarg") version "1.3.70"
+    id("com.moowork.node") version "1.3.1"
     kotlin("jvm") version "1.3.61"
     kotlin("plugin.spring") version "1.3.61"
 }
@@ -29,8 +30,20 @@ configurations {
     }
 }
 
+task<com.moowork.gradle.node.yarn.YarnTask>("buildFront") {
+    dependsOn("yarn_install")
+    args = listOf("build")
+}
+
+tasks.getByName("yarn_install").dependsOn("yarn_cache_clean")
+tasks.getByName("processResources").dependsOn("buildFront")
+
 repositories {
     mavenCentral()
+}
+
+node{
+    download=true
 }
 
 dependencies {
