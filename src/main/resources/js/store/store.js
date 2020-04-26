@@ -241,11 +241,24 @@ export default new Vuex.Store({
         createDatesListMutation(state, payload) {
             const curDate = new Date(payload.curDate)
             let first = new Date(payload.data.first)
-            first.setDate(2)
             let last = new Date(payload.data.last)
+            if (first > curDate) {
+                first = curDate
+                first.setHours(last.getHours())
+                first.setMinutes(last.getMinutes())
+                first.setSeconds(last.getSeconds())
+            }
+            if (last < curDate) {
+                last = curDate
+                last.setHours(first.getHours())
+                last.setMinutes(first.getMinutes())
+                last.setSeconds(first.getSeconds())
+            }
+            first.setDate(2)
             last.setDate(2)
             state.dateList = []
-            while (first <= last) {
+            let copyLast = last.setDate(last.getDate()+1)
+            while (first <= copyLast) {
                 const ye = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(first)
                 const mo = new Intl.DateTimeFormat('en', {month: 'short'}).format(first)
                 const cur = curDate.getFullYear() === first.getFullYear() && curDate.getMonth() === first.getMonth()
