@@ -43,7 +43,12 @@
                                             v-on="on"
                                     ></v-text-field>
                                 </template>
-                                <v-date-picker v-model="creationDate" no-title @input="menu1 = false"></v-date-picker>
+                                <v-date-picker v-model="creationDate"
+                                               no-title
+                                               @input="menu1 = false"
+                                               prev-icon="keyboard_arrow_left"
+                                               next-icon="keyboard_arrow_right">
+                                </v-date-picker>
                             </v-menu>
                             <v-btn class="mt-6" text color="red" @click="saveExpense">Save Expense</v-btn>
                             <v-btn class="mt-6" text color="primary" @click="close(true)">Close</v-btn>
@@ -98,7 +103,12 @@
                                             v-on="on"
                                     ></v-text-field>
                                 </template>
-                                <v-date-picker v-model="creationDate" no-title @input="menu2 = false"></v-date-picker>
+                                <v-date-picker v-model="creationDate"
+                                               no-title
+                                               @input="menu2 = false"
+                                               prev-icon="keyboard_arrow_left"
+                                               next-icon="keyboard_arrow_right">
+                                </v-date-picker>
                             </v-menu>
                             <v-btn class="mt-6" text color="green" @click="saveIncome">Save income</v-btn>
                             <v-btn class="mt-6" text color="primary" @click="close(false)">Close</v-btn>
@@ -223,10 +233,7 @@
                     comment: this.incomeComment,
                     creationDate: this.creationDate
                 };
-                if (this.id === null)
-                    this.addIncomeAction(record)
-                else
-                    this.editIncomeAction(record)
+                this.id === null ? this.addIncomeAction(record) : this.editIncomeAction(record)
                 this.incomeSum = '';
                 this.incomeCategory = '';
                 this.incomeComment = '';
@@ -242,10 +249,7 @@
                     comment: this.expenseComment,
                     creationDate: this.creationDate
                 };
-                if (this.id === null)
-                    this.addExpenseAction(record)
-                else
-                    this.editExpenseAction(record)
+                this.id === null ? this.addExpenseAction(record) : this.editExpenseAction(record)
                 this.expenseSum = '';
                 this.expenseCategory = '';
                 this.expenseComment = '';

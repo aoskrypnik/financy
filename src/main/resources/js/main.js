@@ -9,7 +9,9 @@ import store from 'store/store'
 import VueGoogleCharts from 'vue-google-charts'
 import 'vuetify/dist/vuetify.min.css'
 
-Vue.use(Vuetify)
+Vue.use(Vuetify, {
+    iconfont: 'md'
+})
 Vue.use(VueGoogleCharts)
 Vue.use(Vuelidate)
 
